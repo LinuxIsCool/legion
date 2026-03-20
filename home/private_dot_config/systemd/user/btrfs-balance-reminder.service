@@ -1,0 +1,6 @@
+[Unit]
+Description=Monthly reminder to run btrfs balance on data-24tb
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo "[$(date)] REMINDER: Run btrfs balance on data-24tb. Metadata at 96.5%%. Script: sudo bash ~/.claude/local/scripts/btrfs-balance-data-24tb.sh" >> %h/.claude/local/scripts/pending-sudo.txt'

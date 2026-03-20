@@ -1,0 +1,10 @@
+[Unit]
+Description=Communications Pulse (every 3h, weekdays)
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 06,09,12,15,18:00:00 America/Vancouver
+Persistent=true
+Unit=rhythm@comms-pulse.service
+
+[Install]
+WantedBy=timers.target

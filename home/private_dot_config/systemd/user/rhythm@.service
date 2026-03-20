@@ -1,0 +1,11 @@
+[Unit]
+Description=Legion Rhythm: %i
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.local/share/fnm/node-versions/v24.14.0/installation/bin/node /home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-rhythms/server/build/runner.mjs run %i
+Environment=NODE_ENV=production
+Environment=PATH=/home/shawn/.local/bin:/home/shawn/.local/share/fnm/node-versions/v24.14.0/installation/bin:/usr/local/bin:/usr/bin:/bin
+StandardOutput=journal
+StandardError=journal

@@ -1,0 +1,5 @@
+## PLACEHOLDER — encrypt with age after setup:
+##   age -e -r "age1..." -o encrypted_private_id_rsa.age ~/.ssh/id_rsa
+##
+## This file will be replaced with actual age-encrypted content
+## once `age-keygen` has been run and the key is configured.

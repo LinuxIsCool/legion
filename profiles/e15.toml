@@ -1,0 +1,7 @@
+name = "e15"
+description = "Travel laptop — thin client"
+recipes = [
+  "chezmoi", "fish", "ssh", "github", "uv", "fnm",
+  "alacritty", "fonts", "tailscale",
+  "notes", "claude-code"
+]

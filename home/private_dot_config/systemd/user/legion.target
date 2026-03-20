@@ -1,0 +1,6 @@
+[Unit]
+Description=Legion Ecosystem
+Wants=hippo-graph.service letta-stack.service legion-koi.service legion-messages.service
+
+[Install]
+WantedBy=default.target

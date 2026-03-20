@@ -1,0 +1,14 @@
+[Unit]
+Description=Legion KOI-net Node
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/shawn/legion-koi
+Environment=PATH=/home/shawn/.local/bin:/usr/bin
+ExecStart=/home/shawn/.local/bin/uv run python -m legion_koi
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

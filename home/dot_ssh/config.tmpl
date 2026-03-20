@@ -1,0 +1,36 @@
+{{ if eq .hostname "legion" -}}
+Host mothership
+    HostName 100.117.241.56
+    User ygg
+    BatchMode yes
+
+Host lemur
+    HostName 100.100.1.1
+    User root
+    BatchMode yes
+
+Host e15
+    HostName 100.64.0.1
+    User shawn
+    BatchMode yes
+
+Host e470
+    HostName 100.112.206.108
+    User shawn
+    BatchMode yes
+{{ else if eq .hostname "e15" -}}
+Host mothership
+    HostName 100.117.241.56
+    User ygg
+    BatchMode yes
+
+Host legion
+    HostName 100.74.41.115
+    User shawn
+    BatchMode yes
+
+Host lemur
+    HostName 100.100.1.1
+    User root
+    BatchMode yes
+{{ end -}}

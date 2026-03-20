@@ -1,0 +1,19 @@
+[data]
+  hostname = "{{ .chezmoi.hostname }}"
+  {{- if eq .chezmoi.hostname "legion" }}
+  font_size = 12
+  display_scale = 1.25
+  has_legion_services = true
+  {{- else if eq .chezmoi.hostname "e15" }}
+  font_size = 11
+  display_scale = 1.0
+  has_legion_services = false
+  {{- else }}
+  font_size = 12
+  display_scale = 1.0
+  has_legion_services = false
+  {{- end }}
+
+[age]
+  identity = "~/.config/chezmoi/key.txt"
+  recipient = "age1placeholder-generate-real-key-with-age-keygen"

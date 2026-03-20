@@ -1,0 +1,8 @@
+{{- if not .has_legion_services }}
+.config/systemd/user/legion*
+.config/systemd/user/hippo*
+.config/systemd/user/letta*
+.config/systemd/user/rhythm*
+.config/systemd/user/btrfs*
+{{- end }}
+README.md

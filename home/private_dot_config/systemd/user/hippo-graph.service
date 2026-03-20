@@ -1,0 +1,12 @@
+[Unit]
+Description=Hippo Knowledge Graph (FalkorDB)
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/docker compose -f %h/.config/hippo/compose.yaml up
+ExecStop=/usr/bin/docker compose -f %h/.config/hippo/compose.yaml down
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

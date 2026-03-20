@@ -1,0 +1,9 @@
+[Unit]
+Description=PageIndex incremental rebuild
+After=postgresql.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shawn/legion-pageindex
+Environment=PATH=/home/shawn/.local/bin:/usr/bin
+ExecStart=/home/shawn/.local/bin/uv run legion-pageindex rebuild

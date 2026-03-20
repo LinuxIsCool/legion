@@ -1,0 +1,10 @@
+[Unit]
+Description=Nightly Capacity Review (11pm)
+
+[Timer]
+OnCalendar=*-*-* 23:00:00 America/Vancouver
+Persistent=true
+Unit=rhythm@capacity-review.service
+
+[Install]
+WantedBy=timers.target

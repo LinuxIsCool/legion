@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly Evaluation (Sunday 6am)
+
+[Timer]
+OnCalendar=Sun *-*-* 06:00:00 America/Vancouver
+Persistent=true
+Unit=rhythm@weekly-evaluation.service
+
+[Install]
+WantedBy=timers.target

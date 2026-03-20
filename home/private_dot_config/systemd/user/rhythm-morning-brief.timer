@@ -1,0 +1,10 @@
+[Unit]
+Description=Morning Brief (6am)
+
+[Timer]
+OnCalendar=*-*-* 06:00:00 America/Vancouver
+Persistent=true
+Unit=rhythm@morning-brief.service
+
+[Install]
+WantedBy=timers.target

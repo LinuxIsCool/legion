@@ -1,0 +1,5 @@
+# Age key — NEVER commit
+key.txt
+
+# Decrypted secrets (should only exist temporarily)
+*.age.decrypted

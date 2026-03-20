@@ -1,0 +1,9 @@
+[Unit]
+Description=Legion Recording Transcription (batch)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/.claude/local/scripts/transcribe-and-register.sh --batch-size 50
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=%h

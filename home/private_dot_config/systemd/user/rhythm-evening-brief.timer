@@ -1,0 +1,10 @@
+[Unit]
+Description=Evening Brief (5pm)
+
+[Timer]
+OnCalendar=*-*-* 17:00:00 America/Vancouver
+Persistent=true
+Unit=rhythm@evening-brief.service
+
+[Install]
+WantedBy=timers.target

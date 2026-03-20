@@ -1,0 +1,8 @@
+name = "legion"
+description = "Primary workstation — full setup"
+recipes = [
+  "chezmoi", "fish", "ssh", "github", "uv", "fnm",
+  "alacritty", "fonts", "keyd", "tailscale",
+  "notes", "claude-code", "kde",
+  "docker-services", "services"
+]

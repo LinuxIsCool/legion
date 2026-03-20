@@ -1,0 +1,14 @@
+[Unit]
+Description=Legion PageIndex — Universal Knowledge Backbone
+After=network-online.target postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/shawn/legion-pageindex
+Environment=PATH=/home/shawn/.local/bin:/usr/bin
+ExecStart=/home/shawn/.local/bin/uv run python -m legion_pageindex
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

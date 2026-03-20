@@ -1,0 +1,10 @@
+[Unit]
+Description=Communications Digest (daily, weekdays)
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 20:00:00 America/Vancouver
+Persistent=true
+Unit=rhythm@comms-digest.service
+
+[Install]
+WantedBy=timers.target
