@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# recipe-tmux.sh — install tmux with TPM
+# recipe-tmux.sh — install tmux with TPM (XDG paths, Wayland clipboard)
 source "$(dirname "$0")/../lib/utils.sh"
 
+readonly TPM_DIR="${HOME}/.config/tmux/plugins/tpm"
+
 check() {
-    has_cmd tmux && [[ -d "${HOME}/.tmux/plugins/tpm" ]]
+    has_cmd tmux && [[ -d "${TPM_DIR}" ]]
 }
 
 install() {
@@ -11,10 +13,16 @@ install() {
         install_pacman tmux || return 1
     fi
 
-    # Install TPM
-    if [[ ! -d "${HOME}/.tmux/plugins/tpm" ]]; then
+    # Wayland clipboard support
+    if ! has_cmd wl-copy; then
+        install_pacman wl-clipboard || return 1
+    fi
+
+    # Install TPM to XDG config path
+    if [[ ! -d "${TPM_DIR}" ]]; then
         log_info "Installing TPM (Tmux Plugin Manager)"
-        git clone https://github.com/tmux-plugins/tpm "${HOME}/.tmux/plugins/tpm"
+        mkdir -p "$(dirname "${TPM_DIR}")"
+        git clone https://github.com/tmux-plugins/tpm "${TPM_DIR}"
     fi
 
     log_info "Run prefix + I inside tmux to install plugins"

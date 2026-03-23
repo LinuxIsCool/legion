@@ -2,7 +2,7 @@ name = "legion"
 description = "Primary workstation — full setup"
 recipes = [
   "chezmoi", "fish", "ssh", "github", "uv", "fnm",
-  "alacritty", "fonts", "keyd", "tailscale",
+  "alacritty", "fonts", "tmux", "nvim", "keyd", "tailscale",
   "notes", "claude-code", "kde",
   "docker-services", "services"
 ]

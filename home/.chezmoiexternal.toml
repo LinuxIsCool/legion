@@ -1,6 +1,6 @@
-[".config/nvim"]
+[".config/nvim/lua/custom"]
   type = "git-repo"
   url = "https://github.com/LinuxIsCool/nvchadcustom.git"
   refreshPeriod = "168h"
-  [".config/nvim".clone]
+  [".config/nvim/lua/custom".clone]
     args = ["--branch", "legion", "--depth", "1"]
