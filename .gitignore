@@ -3,3 +3,4 @@ key.txt
 
 # Decrypted secrets (should only exist temporarily)
 *.age.decrypted
+.letta/
