@@ -18,6 +18,11 @@ install() {
         install_pacman wl-clipboard || return 1
     fi
 
+    # fzf required for tmux-text-macros (emoji picker)
+    if ! has_cmd fzf; then
+        install_pacman fzf || return 1
+    fi
+
     # Install TPM to XDG config path
     if [[ ! -d "${TPM_DIR}" ]]; then
         log_info "Installing TPM (Tmux Plugin Manager)"

@@ -2,6 +2,6 @@ name = "e15"
 description = "Travel laptop — thin client"
 recipes = [
   "chezmoi", "fish", "ssh", "github", "uv", "fnm",
-  "alacritty", "fonts", "tmux", "nvim", "keyd", "tailscale",
+  "alacritty", "fonts", "cli-tools", "tmux", "nvim", "keyd", "tailscale",
   "notes", "claude-code"
 ]

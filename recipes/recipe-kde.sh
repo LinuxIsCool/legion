@@ -33,6 +33,10 @@ install() {
     # Theme
     kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage "org.kde.breezedark.desktop"
 
+    # Key repeat — fast repeat speed (140ms delay, 40 chars/sec)
+    kwriteconfig6 --file kcminputrc --group Keyboard --key RepeatDelay 140
+    kwriteconfig6 --file kcminputrc --group Keyboard --key RepeatRate 40
+
     # Disable splash screen
     kwriteconfig6 --file ksplashrc --group KSplash --key Engine none
     kwriteconfig6 --file ksplashrc --group KSplash --key Theme None
