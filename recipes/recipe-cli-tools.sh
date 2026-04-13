@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# recipe-cli-tools.sh — essential CLI utilities (zoxide, fzf, just)
+# recipe-cli-tools.sh — essential CLI utilities (zoxide, fzf)
 source "$(dirname "$0")/../lib/utils.sh"
 
 check() {
-    has_cmd zoxide && has_cmd fzf && has_cmd just
+    has_cmd zoxide && has_cmd fzf
 }
 
 install() {
@@ -21,13 +21,6 @@ install() {
         install_pacman fzf || needs_install=true
     else
         log_skip "fzf"
-    fi
-
-    # just — command runner (justfiles)
-    if ! has_cmd just; then
-        install_pacman just || needs_install=true
-    else
-        log_skip "just"
     fi
 
     if [[ "$needs_install" == "true" ]]; then

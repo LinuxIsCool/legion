@@ -1,4 +1,5 @@
 {
+  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "uv run ~/.claude/plugins/local/legion-plugins/plugins/claude-statusline/hooks/status.py"
@@ -67,7 +68,16 @@
     "claude-days@legion-plugins": true,
     "claude-recordings@legion-plugins": true,
     "claude-transcripts@legion-plugins": true,
-    "claude-dreams@legion-plugins": true
+    "claude-dreams@legion-plugins": true,
+    "claude-knowledge@legion-plugins": true,
+    "claude-finance@legion-plugins": true,
+    "claude-discourse@legion-plugins": true,
+    "claude-outbox@legion-plugins": true,
+    "claude-prompts@legion-plugins": true,
+    "claude-roadmaps@legion-plugins": true,
+    "claude-statusline@legion-plugins": true,
+    "claude-tmux@legion-plugins": true,
+    "claude-voice@legion-plugins": true
   },
   "extraKnownMarketplaces": {
     "legion-plugins": {
@@ -101,6 +111,5 @@
       }
     }
   },
-  "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet"
+  "skipDangerousModePermissionPrompt": true
 }
