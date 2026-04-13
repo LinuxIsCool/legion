@@ -51,6 +51,20 @@ The `home/` directory is a chezmoi source. Machine-specific config via hostname 
 - Age-encrypted secrets (SSH keys, fish secrets)
 - NVChad pulled as chezmoi external
 
+### The Chezmoi Rule
+
+**NEVER run `chezmoi apply` without `chezmoi diff` first.**
+
+Chezmoi is a one-way overwrite. If you edit a live file (e.g. `~/.config/tmux/plugins.conf`)
+instead of the source (`~/legion-machine/home/private_dot_config/tmux/plugins.conf`),
+the next `chezmoi apply` silently destroys your change. No merge, no warning.
+
+**Workflow:**
+1. **To change config**: Edit the source in `~/legion-machine/home/...`, then `chezmoi apply`
+2. **If you edited a live file**: Run `chezmoi add <path>` to capture it into the source
+3. **Before any apply**: Run `chezmoi diff` to review what will change
+4. **Periodic audit**: Run `chezmoi diff` to catch drift between live and source
+
 ## Age Encryption
 
 Secrets are encrypted with age. To set up:

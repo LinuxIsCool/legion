@@ -1,4 +1,8 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "uv run ~/.claude/plugins/local/legion-plugins/plugins/claude-statusline/hooks/status.py"
+  },
   "enabledPlugins": {
     "claude-subconscious@claude-subconscious": true,
     "frontend-design@claude-plugins-official": true,
