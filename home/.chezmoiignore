@@ -5,4 +5,6 @@
 .config/systemd/user/rhythm*
 .config/systemd/user/btrfs*
 {{- end }}
+# Runtime-generated tmux config (claude-tmux indicator format strings)
+.config/tmux/plugins-dynamic.conf
 README.md
