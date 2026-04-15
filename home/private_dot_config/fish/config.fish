@@ -9,3 +9,6 @@ source /usr/share/cachyos-fish-config/cachyos-config.fish
 #end
 fnm env --use-on-cd --shell fish | source
 zoxide init fish | source
+
+# Abbreviations
+abbr --add vim -- nvim
