@@ -1,0 +1,27 @@
+[Unit]
+Description=claude-voice STT WebSocket proxy (local transcription via faster-whisper)
+After=pipewire.service
+Wants=pipewire.service
+
+[Service]
+Type=simple
+ExecStart=/home/shawn/.local/share/stt-env/bin/python3 \
+    /home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-voice/scripts/stt_proxy.py
+ExecStopPost=/bin/rm -f /home/shawn/.claude/local/voice/stt-active
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=10
+KillSignal=SIGTERM
+KillMode=mixed
+Environment=PYTHONUNBUFFERED=1
+
+# Memory leak guardrails (CTranslate2 CUDA pool grows monotonically)
+RuntimeMaxSec=43200
+MemoryMax=6G
+MemoryHigh=4G
+
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Install]
+WantedBy=voice.target
