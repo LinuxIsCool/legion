@@ -14,11 +14,14 @@ TimeoutStartSec=10
 KillSignal=SIGTERM
 KillMode=mixed
 Environment=PYTHONUNBUFFERED=1
+Environment=OMP_NUM_THREADS=4
+Environment=CT2_CUDA_ALLOCATOR=cuda_malloc_async
 
-# Memory leak guardrails (CTranslate2 CUDA pool grows monotonically)
+# Memory guardrails
 RuntimeMaxSec=43200
 MemoryMax=6G
 MemoryHigh=4G
+MemorySwapMax=0
 
 StartLimitIntervalSec=300
 StartLimitBurst=5
