@@ -1,0 +1,13 @@
+[Unit]
+Description=claude-voice AEC link setup (PipeWire echo cancellation)
+After=pipewire.service wireplumber.service
+Wants=pipewire.service
+# Run after PipeWire loads the echo-cancel module
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.claude/local/scripts/voice-aec-setup.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=voice.target
