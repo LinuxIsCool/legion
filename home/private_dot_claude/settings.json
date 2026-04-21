@@ -1,15 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions",
-    "additionalDirectories": [
-      "/home/shawn/.claude",
-      "/home/shawn/.config",
-      "/home/shawn/Workspace",
-      "/home/shawn/legion-brain",
-      "/home/shawn/Documents/Notes",
-      "/home/shawn/legion-machine",
-      "/tmp"
-    ],
     "allow": [
       "Bash",
       "Edit(~/.claude/**)",
@@ -29,7 +19,18 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)"
-    ]
+    ],
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": [
+      "/home/shawn/.claude",
+      "/home/shawn/.config",
+      "/home/shawn/Workspace",
+      "/home/shawn/legion-brain",
+      "/home/shawn/Documents/Notes",
+      "/home/shawn/legion-machine",
+      "/tmp"
+    ],
+    "skipDangerousModePermissionPrompt": true
   },
   "model": "opus[1m]",
   "hooks": {
@@ -180,12 +181,5 @@
         "url": "https://github.com/anthropics/skills.git"
       }
     }
-  },
-  "voice": {
-    "enabled": true,
-    "mode": "hold"
-  },
-  "skipDangerousModePermissionPrompt": true,
-  "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  }
 }
