@@ -95,6 +95,62 @@ for root in "${allow_roots[@]}"; do
   esac
 done
 
+# === Persona guardrail enforcement (persona-mega-project Week 1) ===
+# When CLAUDE_PERSONA env var is set, consult guardrails.yaml.
+# Maps the requested operation to a capability key and asks evaluate_guardrail.py.
+#
+# Inputs:
+#   - In real hook invocation, $tool_name / $command / $file_path are parsed
+#     from stdin JSON above (Claude Code's hook payload).
+#   - For smoke-testing, set TOOL_NAME / BASH_CMD / TOOL_PATH env vars (we
+#     CANNOT use BASH_COMMAND because bash overwrites it on every command).
+EFF_TOOL_NAME="${TOOL_NAME:-$tool_name}"
+EFF_BASH_CMD="${BASH_CMD:-$command}"
+EFF_TOOL_PATH="${TOOL_PATH:-$file_path}"
+
+if [[ -n "${CLAUDE_PERSONA:-}" ]] && [[ -n "$EFF_TOOL_NAME" ]]; then
+  CAPABILITY=""
+  case "$EFF_TOOL_NAME" in
+    Bash) [[ "$EFF_BASH_CMD" =~ ^sudo ]] && CAPABILITY="run_sudo" || CAPABILITY="run_bash" ;;
+    Write|Edit) [[ "$EFF_TOOL_PATH" =~ \.env$|secrets ]] && CAPABILITY="modify_secrets" || CAPABILITY="" ;;
+    Delete) CAPABILITY="delete_file" ;;
+  esac
+  if [[ -n "$CAPABILITY" ]]; then
+    set +e
+    GUARD_OUTPUT=$(python3 "$HOME/.claude/local/scripts/evaluate_guardrail.py" \
+      --persona "$CLAUDE_PERSONA" --capability "$CAPABILITY" --json 2>&1)
+    GUARD_CODE=$?
+    set -e
+    if [[ $GUARD_CODE -eq 1 ]]; then
+      # Extract a clean reason from the evaluator JSON; fall back to raw output.
+      REASON=$(printf '%s' "$GUARD_OUTPUT" | jq -r '.reason // empty' 2>/dev/null || true)
+      [[ -z "$REASON" ]] && REASON="$GUARD_OUTPUT"
+      MSG="Persona guardrail: $CLAUDE_PERSONA cannot $CAPABILITY — $REASON"
+      # jq -nc safely escapes the message into valid JSON.
+      jq -nc --arg m "$MSG" '{
+        hookSpecificOutput: {
+          hookEventName: "PermissionRequest",
+          decision: { behavior: "deny", message: $m }
+        }
+      }'
+      # Audit log
+      AUDIT="$HOME/.claude/local/personas/audit/${CLAUDE_PERSONA}-$(date +%Y-%m-%d).jsonl"
+      mkdir -p "$(dirname "$AUDIT")"
+      jq -nc \
+        --arg event "guardrail_deny" \
+        --arg persona "$CLAUDE_PERSONA" \
+        --arg capability "$CAPABILITY" \
+        --arg ts "$(date -Iseconds)" \
+        --arg reason "$REASON" \
+        '{event:$event, persona:$persona, capability:$capability, timestamp:$ts, reason:$reason}' \
+        >> "$AUDIT"
+      echo "  -> DENY persona=$CLAUDE_PERSONA capability=$CAPABILITY" >> "$LOG"
+      exit 0
+    fi
+  fi
+fi
+# === End persona guardrails ===
+
 # No match — fall through, let default gate handle it
 echo "  -> FALLTHROUGH (no match)" >> "$LOG"
 exit 0
