@@ -1,0 +1,16 @@
+[Unit]
+Description=Bondometer (BCRG venture-lead) wake schedule
+Requires=venture-lead@bondometer.service
+
+[Timer]
+# Daily 05:30 wake
+OnCalendar=*-*-* 05:30:00
+# Daily 16:30 wake
+OnCalendar=*-*-* 16:30:00
+# Sunday 05:00 deep-run
+OnCalendar=Sun *-*-* 05:00:00
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target
