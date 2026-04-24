@@ -1,0 +1,10 @@
+[Unit]
+Description=Clean stale Claude Matrix inboxes (dead pid dirs)
+Documentation=file:///home/shawn/.claude/local/backlog/253-matrix-stale-inbox-cron.md
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /home/shawn/.claude/local/scripts/matrix-cleanup-stale-inboxes.sh
+StandardOutput=append:/home/shawn/.claude/local/matrix/cleanup.log
+StandardError=append:/home/shawn/.claude/local/matrix/cleanup.log
+Nice=10

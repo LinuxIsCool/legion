@@ -1,0 +1,14 @@
+[Unit]
+Description=Run matrix stale inbox cleanup hourly
+Documentation=file:///home/shawn/.claude/local/backlog/253-matrix-stale-inbox-cron.md
+
+[Timer]
+# Run 5 minutes after boot, then hourly after that.
+OnBootSec=5min
+OnUnitActiveSec=1h
+# Persist missed runs across reboots.
+Persistent=true
+Unit=matrix-inbox-cleanup.service
+
+[Install]
+WantedBy=timers.target
