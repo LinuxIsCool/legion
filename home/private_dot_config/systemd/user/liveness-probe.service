@@ -1,0 +1,12 @@
+[Unit]
+Description=Legion silent-degradation liveness probe
+Documentation=file:///home/shawn/.claude/local/scripts/liveness-probe.py
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.local/bin/uv run /home/shawn/.claude/local/scripts/liveness-probe.py
+StandardOutput=null
+StandardError=append:/home/shawn/.claude/local/liveness/stderr.log
+Nice=5
+# Exit codes 0/1/2 all acceptable — degraded/critical raise via desktop notification
+SuccessExitStatus=0 1 2

@@ -1,0 +1,13 @@
+[Unit]
+Description=Run Legion liveness probe every 30 minutes
+Documentation=file:///home/shawn/.claude/local/scripts/liveness-probe.py
+
+[Timer]
+# First run 2 minutes after boot, then every 30min.
+OnBootSec=2min
+OnUnitActiveSec=30min
+Persistent=true
+Unit=liveness-probe.service
+
+[Install]
+WantedBy=timers.target
