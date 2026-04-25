@@ -1,0 +1,54 @@
+services:
+  letta-db:
+    image: pgvector/pgvector:0.8.2-pg17
+    container_name: letta-db
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      POSTGRES_USER: letta
+      POSTGRES_PASSWORD: letta
+      POSTGRES_DB: letta
+      # Use non-standard port to avoid conflict with host PostgreSQL on 5432
+      PGPORT: "5433"
+    volumes:
+      - ${HOME}/.letta/.persist/pgdata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U letta -p 5433"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  letta-server:
+    image: letta/letta:latest
+    container_name: letta-server
+    restart: unless-stopped
+    depends_on:
+      letta-db:
+        condition: service_healthy
+    network_mode: host
+    # .env supplies OPENAI_API_BASE and OPENAI_API_KEY, which Letta uses as
+    # defaults for any agent whose llm_config.model_endpoint_type is "openai".
+    # Currently points at TELUS GPT OSS 120B for completions (sovereign).
+    #
+    # Embedding routing is per-agent (see embedding_config in DB), NOT from
+    # OPENAI_API_BASE. As of 2026-04-24 the Subconscious agent's embedding_config
+    # is overridden via REST PATCH to point at the user-level Ollama instance
+    # (systemd --user unit ollama-user.service, port 11435, mxbai-embed-large
+    # 1024-dim). Previously archival was dead because the agent's OpenAI-typed
+    # embedding endpoint resolved to api.openai.com with the TELUS key.
+    #
+    # Ollama-user unit: ~/.config/systemd/user/ollama-user.service
+    # To re-pin the agent (replays the PATCH if DB is rebuilt):
+    #   curl -s -X PATCH http://localhost:8283/v1/agents/<agent_id> \
+    #     -H 'Content-Type: application/json' \
+    #     -d '{"embedding_config":{"embedding_endpoint_type":"ollama",
+    #          "embedding_endpoint":"http://127.0.0.1:11435/v1",
+    #          "embedding_model":"mxbai-embed-large","embedding_dim":1024,
+    #          "embedding_chunk_size":300,"handle":"ollama/mxbai-embed-large",
+    #          "batch_size":32}}'
+    env_file: .env
+    environment:
+      LETTA_PG_URI: postgresql://letta:letta@127.0.0.1:5433/letta
+      # Default base URL for Ollama-typed providers (host network).
+      OLLAMA_BASE_URL: "http://127.0.0.1:11435"
