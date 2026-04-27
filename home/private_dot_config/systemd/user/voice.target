@@ -1,6 +1,6 @@
 [Unit]
-Description=Voice Services (TTS + Arbiter)
-Wants=voice-tts.service voice-arbiter.service
+Description=Voice Services (TTS + STT + STT-proxy + Arbiter)
+Wants=voice-tts.service voice-stt.service voice-stt-proxy.service voice-arbiter.service
 After=pipewire.service
 
 [Install]
