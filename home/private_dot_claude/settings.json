@@ -67,6 +67,18 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/shawn/.claude/hooks/seed-guard.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -107,7 +119,6 @@
     "firecrawl@claude-plugins-official": true,
     "qodo-skills@claude-plugins-official": true,
     "claude-matrix@legion-plugins": true,
-    "claude-logging@legion-plugins": true,
     "claude-transcript-search@legion-plugins": true,
     "claude-temporal@legion-plugins": true,
     "claude-journal@legion-plugins": true,
@@ -140,15 +151,20 @@
     "claude-dreams@legion-plugins": true,
     "claude-knowledge@legion-plugins": true,
     "claude-finance@legion-plugins": true,
-    "claude-discourse@legion-plugins": true,
     "claude-outbox@legion-plugins": true,
     "claude-prompts@legion-plugins": true,
     "claude-roadmaps@legion-plugins": true,
     "claude-statusline@legion-plugins": true,
-    "claude-tmux@legion-plugins": true,
     "claude-voice@legion-plugins": true,
     "claude-rlm@legion-plugins": true,
-    "claude-dialog@legion-plugins": true
+    "claude-dialog@legion-plugins": true,
+    "claude-discourse@legion-plugins": true,
+    "claude-factory@legion-plugins": true,
+    "claude-moc@legion-plugins": true,
+    "claude-infinite@legion-plugins": true,
+    "claude-graphiti@legion-plugins": true,
+    "claude-tmux@legion-plugins": true,
+    "claude-logging@legion-plugins": true
   },
   "extraKnownMarketplaces": {
     "legion-plugins": {
@@ -181,5 +197,12 @@
         "url": "https://github.com/anthropics/skills.git"
       }
     }
-  }
+  },
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-daltonized",
+  "voiceEnabled": true
 }
