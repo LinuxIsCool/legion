@@ -1,0 +1,10 @@
+[Unit]
+Description=Run 24TB recordings sync nightly at 02:30 (P1.6)
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=Legion recording hash backfill (P1.5 idempotency)
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/.claude/local/scripts/backfill-recording-hashes.sh 50
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=%h
+CPUQuota=50%
+Nice=15
+IOSchedulingClass=idle

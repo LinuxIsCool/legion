@@ -1,0 +1,15 @@
+[Unit]
+Description=Legion TPF Processing Queue (meeting notes pipeline)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/.claude/local/scripts/tpf-queue.sh
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=%h
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=%h/.claude/local/secrets/telus-api.env
+# No GPU needed — uses TELUS sovereign endpoints
+CPUQuota=50%
+MemoryMax=2G
+Nice=15

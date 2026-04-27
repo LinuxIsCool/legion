@@ -1,0 +1,14 @@
+[Unit]
+Description=Legion Diarization Queue (with voice stagger — P1.1)
+After=legion-transcribe.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/.claude/local/scripts/diarize-with-stagger.sh
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=%h
+# WhisperX needs GPU memory — same limits as transcription
+CPUQuota=100%
+MemoryMax=8G
+Nice=10

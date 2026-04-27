@@ -1,0 +1,12 @@
+[Unit]
+Description=Legion 24TB recordings sync (P1.6)
+After=mnt-data\x2d24tb.mount
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/.claude/local/scripts/sync-recordings-to-24tb.sh
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=%h
+Nice=15
+IOSchedulingClass=idle

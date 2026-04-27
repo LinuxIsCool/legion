@@ -1,0 +1,17 @@
+[Unit]
+Description=Legion Recording Watcher (inotify on landing zones — P1.2)
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash %h/.claude/local/scripts/recording-watcher.sh
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=%h
+MemoryMax=200M
+Nice=15
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Run pipeline stall detector every 30 minutes (P1.4)
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=30min
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

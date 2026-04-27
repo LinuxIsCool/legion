@@ -1,0 +1,12 @@
+[Unit]
+Description=Legion pipeline stall detector (P1.4)
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/uv run %h/.claude/local/scripts/pipeline-watch.py
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=%h
+MemoryMax=200M
+Nice=15
