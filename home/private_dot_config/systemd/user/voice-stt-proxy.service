@@ -2,6 +2,8 @@
 Description=claude-voice STT WebSocket proxy (local transcription via faster-whisper)
 After=pipewire.service
 Wants=pipewire.service
+StartLimitIntervalSec=300
+StartLimitBurst=5
 
 [Service]
 Type=simple
@@ -22,9 +24,6 @@ RuntimeMaxSec=43200
 MemoryMax=6G
 MemoryHigh=4G
 MemorySwapMax=0
-
-StartLimitIntervalSec=300
-StartLimitBurst=5
 
 [Install]
 WantedBy=voice.target
