@@ -1,0 +1,6 @@
+[Unit]
+Description=claude-voice health check
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.local/bin/uv run /home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-voice/scripts/voice_health.py

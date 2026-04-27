@@ -1,0 +1,20 @@
+[Unit]
+Description=claude-voice STT daemon (wake word + transcription)
+After=voice-queue.service pipewire.service
+Requires=pipewire.service
+StartLimitIntervalSec=120
+StartLimitBurst=3
+
+[Service]
+Type=simple
+ExecStart=/home/shawn/.local/share/stt-env/bin/python3 /home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-voice/scripts/stt_daemon.py
+ExecStopPost=/bin/rm -f /home/shawn/.claude/local/voice/stt-active
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=30
+KillSignal=SIGTERM
+KillMode=process
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=voice.target

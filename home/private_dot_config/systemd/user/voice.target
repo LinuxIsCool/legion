@@ -1,0 +1,7 @@
+[Unit]
+Description=Voice Services (TTS + Arbiter)
+Wants=voice-tts.service voice-arbiter.service
+After=pipewire.service
+
+[Install]
+WantedBy=graphical-session.target

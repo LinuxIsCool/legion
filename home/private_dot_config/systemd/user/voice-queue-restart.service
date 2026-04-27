@@ -1,0 +1,6 @@
+[Unit]
+Description=Restart queue daemon on code/config change
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --user restart voice-queue.service

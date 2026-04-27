@@ -1,0 +1,9 @@
+[Unit]
+Description=claude-voice health check (every 5 minutes)
+
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=300
+
+[Install]
+WantedBy=voice.target

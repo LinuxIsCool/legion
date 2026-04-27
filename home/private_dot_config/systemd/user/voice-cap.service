@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily claude-voice rolling cap (keep last 10k bundles)
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.claude/local/scripts/voice-rolling-cap.sh
+StandardOutput=append:/home/shawn/.claude/local/reports/nightly/voice-cap.log
+StandardError=append:/home/shawn/.claude/local/reports/nightly/voice-cap.log
+
+[Install]
+WantedBy=default.target

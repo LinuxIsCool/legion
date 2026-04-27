@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch for queue daemon code/config changes
+
+[Path]
+PathChanged=/home/shawn/.claude/local/voice/config.yaml
+PathChanged=/home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-voice/scripts/voice_queue.py
+Unit=voice-queue-restart.service
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,6 @@
+[Unit]
+Description=Restart TTS daemon on code/config change
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --user restart voice-tts.service

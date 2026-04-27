@@ -1,0 +1,19 @@
+[Unit]
+Description=claude-voice TTS daemon (Kokoro-82M)
+After=pipewire.service
+Requires=pipewire.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+ExecStart=/home/shawn/.local/share/kokoro-env/bin/python3 /home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-voice/scripts/tts_daemon.py
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=30
+KillSignal=SIGTERM
+KillMode=process
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=voice.target
