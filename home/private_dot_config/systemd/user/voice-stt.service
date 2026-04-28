@@ -2,6 +2,7 @@
 Description=claude-voice STT daemon (wake word + transcription)
 After=voice-queue.service pipewire.service
 Requires=pipewire.service
+PartOf=voice.target
 StartLimitIntervalSec=120
 StartLimitBurst=3
 

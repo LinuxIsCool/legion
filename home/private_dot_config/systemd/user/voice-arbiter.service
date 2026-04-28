@@ -4,6 +4,7 @@ Documentation=file://%h/.claude/plugins/local/legion-plugins/plugins/claude-voic
 After=pipewire.service wireplumber.service voice-tts.service
 Wants=voice-tts.service
 Conflicts=voice-queue.service
+PartOf=voice.target
 
 [Service]
 Type=notify

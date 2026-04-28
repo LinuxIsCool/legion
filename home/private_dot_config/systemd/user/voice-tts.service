@@ -2,6 +2,7 @@
 Description=claude-voice TTS daemon (Kokoro-82M)
 After=pipewire.service
 Requires=pipewire.service
+PartOf=voice.target
 StartLimitIntervalSec=60
 StartLimitBurst=3
 
