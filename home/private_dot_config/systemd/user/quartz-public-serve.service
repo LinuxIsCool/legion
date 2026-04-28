@@ -1,0 +1,21 @@
+[Unit]
+Description=Quartz public-build static server (Phase 4 D4 — Tailscale Funnel target)
+After=default.target
+# Public serve depends on public-build/ existing. If absent, npx http-server
+# will fail loudly — preferred over silently serving a 404.
+
+[Service]
+Type=simple
+WorkingDirectory=/home/shawn/.claude/local/quartz
+# Listen on 4322 (internal serve uses 4321). 127.0.0.1 only — Tailscale
+# Funnel is the public-facing layer; we do NOT bind to 0.0.0.0.
+ExecStart=/usr/bin/env npx -y http-server public-build -a 127.0.0.1 -p 4322 --cors -s
+Restart=on-failure
+RestartSec=10s
+# Lower memory ceiling — http-server is tiny.
+MemoryMax=256M
+# IO niceness — internal serve gets priority.
+Nice=15
+
+[Install]
+WantedBy=default.target

@@ -5,7 +5,9 @@ After=default.target hippo-graph.service
 [Service]
 Type=oneshot
 WorkingDirectory=%h/.claude/plugins/local/legion-plugins/plugins/claude-quartz
-ExecStart=/usr/bin/env uv run --with falkordb --with scipy --with numpy --with pyyaml python %h/.claude/plugins/local/legion-plugins/plugins/claude-quartz/scripts/spectral_gap_emit.py
+# §4.4 fix: PEP 723 inline-deps in spectral_gap_emit.py is single source of
+# truth. uv run resolves deps from the script header — no --with flags needed.
+ExecStart=/usr/bin/env uv run %h/.claude/plugins/local/legion-plugins/plugins/claude-quartz/scripts/spectral_gap_emit.py
 StandardOutput=append:%h/.claude/local/quartz/spectral-gap.log
 StandardError=append:%h/.claude/local/quartz/spectral-gap.log
 # Eigenvalue computation is single-threaded scipy ARPACK, ~9 min on 60K nodes.

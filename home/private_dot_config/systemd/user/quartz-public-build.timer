@@ -1,0 +1,14 @@
+[Unit]
+Description=Quartz public-build timer (Phase 4 D2 — every hour at :15)
+
+[Timer]
+# Fire at :15 past the hour, after internal :00/:30 builds have settled.
+# Internal builds can take 5-10 min each, so :15 is a safe offset.
+OnCalendar=*:15
+# Catch up if missed (e.g., laptop closed)
+Persistent=true
+RandomizedDelaySec=60s
+Unit=quartz-public-build.service
+
+[Install]
+WantedBy=timers.target

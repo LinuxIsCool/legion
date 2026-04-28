@@ -1,0 +1,23 @@
+[Unit]
+Description=Quartz public-build (Phase 4 D2 — dual-site)
+After=default.target quartz-rhythm.service
+# Public build depends on internal build's content.staging being current.
+# Wants= (not Requires=) — if internal build hasn't run, we'll skip cleanly
+# on the missing content.staging check inside public-build-rhythm.sh.
+Wants=quartz-rhythm.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0/scripts/public-build-rhythm.sh
+StandardOutput=append:/home/shawn/.claude/local/quartz/public-build.log
+StandardError=append:/home/shawn/.claude/local/quartz/public-build.log
+Nice=12
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+# Public build is smaller than internal (274 pages vs 5,500). Lower memory
+# ceiling than internal's 6G — fail fast on regression.
+MemoryHigh=3G
+MemoryMax=4G
+Environment=QUARTZ_CONCURRENCY=1
+Environment=QUARTZ_BASEURL=legion-public.tailnet.ts.net
+TimeoutStartSec=15min
