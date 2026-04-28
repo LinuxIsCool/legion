@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Quartz full build every 30 minutes
+
+[Timer]
+OnCalendar=*:0/30
+Persistent=true
+Unit=quartz-rhythm.service
+
+[Install]
+WantedBy=timers.target

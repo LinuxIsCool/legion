@@ -1,0 +1,19 @@
+[Unit]
+Description=Quartz full-build rhythm (Legion's Garden)
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0/scripts/build-rhythm.sh
+StandardOutput=append:/home/shawn/.claude/local/quartz/build.log
+StandardError=append:/home/shawn/.claude/local/quartz/build.log
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+# Memory ceiling — fail fast rather than fight kernel OOM.
+# Build process should fit in 5G with --concurrency=2 + heap=4096.
+MemoryHigh=5G
+MemoryMax=6G
+# Concurrency cap (build-rhythm.sh reads QUARTZ_CONCURRENCY)
+Environment=QUARTZ_CONCURRENCY=2
+TimeoutStartSec=20min

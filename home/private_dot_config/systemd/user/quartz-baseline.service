@@ -1,0 +1,9 @@
+[Unit]
+Description=Quartz Phase 1 daily baseline metrics
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0/scripts/quartz-baseline.sh
+StandardOutput=journal
+StandardError=journal

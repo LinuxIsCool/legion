@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Quartz Phase 1 baseline at 23:50
+
+[Timer]
+OnCalendar=*-*-* 23:50:00
+Persistent=true
+Unit=quartz-baseline.service
+
+[Install]
+WantedBy=timers.target

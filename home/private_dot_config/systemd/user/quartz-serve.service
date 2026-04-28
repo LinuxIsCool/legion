@@ -1,0 +1,15 @@
+[Unit]
+Description=Quartz serve daemon (legion:4321)
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0/scripts/quartz-serve.sh
+Restart=on-failure
+RestartSec=10
+Nice=5
+StandardOutput=append:/home/shawn/.claude/local/quartz/serve.log
+StandardError=append:/home/shawn/.claude/local/quartz/serve.log
+
+[Install]
+WantedBy=default.target
