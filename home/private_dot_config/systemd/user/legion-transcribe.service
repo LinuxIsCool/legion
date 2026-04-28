@@ -11,6 +11,8 @@ ExecStart=/bin/bash %h/.claude/local/scripts/transcribe-with-stagger.sh
 StandardOutput=journal
 StandardError=journal
 Environment=HOME=%h
-MemoryHigh=4G
-MemoryMax=6G
+MemoryHigh=6G
+# Bumped 6G→9G after Apr 28 08:55 OOM mid-batch on 50-file run. faster-whisper
+# peak ~4G + buffer; 9G gives headroom without encroaching on system RAM (32G total).
+MemoryMax=9G
 OOMScoreAdjust=500

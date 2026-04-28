@@ -10,5 +10,8 @@ StandardError=journal
 Environment=HOME=%h
 # WhisperX needs GPU memory — same limits as transcription
 CPUQuota=100%
-MemoryMax=8G
+# Bumped 8G→12G after Apr 28 07:04 OOM on a long Mar-2021 .mkv. pyannote +
+# WhisperX peak ~7-8G on multi-hour audio; 12G gives headroom without
+# encroaching on system RAM (32G total).
+MemoryMax=12G
 Nice=10
