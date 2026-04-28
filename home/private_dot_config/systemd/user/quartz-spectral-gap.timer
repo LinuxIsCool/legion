@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Quartz spectral-gap KPI emit (Phase 3 D8)
+
+[Timer]
+# Fire 5 minutes after the daily baseline timer (23:50) to avoid contention.
+OnCalendar=*-*-* 23:55:00
+Persistent=true
+RandomizedDelaySec=3min
+
+[Install]
+WantedBy=timers.target
