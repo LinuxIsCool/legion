@@ -4,6 +4,12 @@ Description=Legion Recording Transcription (with voice stagger)
 # prevent OOM cascades that take down Spotify / Letta / etc. Two whisper
 # instances ran concurrently 2026-04-27 17:32 (this batch + a one-off
 # recover script) — kernel killed Spotify + the recover python.
+#
+# OnFailure= triggers voice.target when the unit fails (e.g. kernel OOM
+# SIGKILL bypasses bash trap in transcribe-with-stagger.sh). Closes the
+# stranded-voice gap (#321) at the systemd level — the bash trap covers
+# normal/signal exits; this covers SIGKILL.
+OnFailure=voice.target
 
 [Service]
 Type=oneshot

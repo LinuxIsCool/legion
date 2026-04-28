@@ -1,6 +1,11 @@
 [Unit]
 Description=Legion Diarization Queue (with voice stagger — P1.1)
 After=legion-transcribe.service
+# OnFailure= triggers voice.target when the unit fails (e.g. kernel OOM
+# SIGKILL bypasses bash trap in diarize-with-stagger.sh). Closes the
+# stranded-voice gap (#321) at the systemd level — the bash trap covers
+# normal/signal exits; this covers SIGKILL.
+OnFailure=voice.target
 
 [Service]
 Type=oneshot
