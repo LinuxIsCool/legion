@@ -1,9 +1,16 @@
 [Unit]
-Description=Legion Recording Transcription (batch)
+Description=Legion Recording Transcription (with voice stagger)
+# Whisper large-v3-turbo loads 2-4 GB resident per process. Caps below
+# prevent OOM cascades that take down Spotify / Letta / etc. Two whisper
+# instances ran concurrently 2026-04-27 17:32 (this batch + a one-off
+# recover script) — kernel killed Spotify + the recover python.
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash %h/.claude/local/scripts/transcribe-and-register.sh --batch-size 50
+ExecStart=/bin/bash %h/.claude/local/scripts/transcribe-with-stagger.sh
 StandardOutput=journal
 StandardError=journal
 Environment=HOME=%h
+MemoryHigh=4G
+MemoryMax=6G
+OOMScoreAdjust=500
