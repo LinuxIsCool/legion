@@ -15,5 +15,8 @@ IOSchedulingPriority=7
 MemoryHigh=5G
 MemoryMax=6G
 # Concurrency cap (build-rhythm.sh reads QUARTZ_CONCURRENCY)
-Environment=QUARTZ_CONCURRENCY=2
+# Dropped 2 → 1 after 5 OOM-kills today at concurrency=2 with heap=4G.
+# Doubles wall-clock to ~25 min but bullet-proofs against OOM.
+# Phase 2 D3 stage-copy retires patches 02-04 which should reduce peak.
+Environment=QUARTZ_CONCURRENCY=1
 TimeoutStartSec=20min

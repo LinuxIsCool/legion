@@ -1,0 +1,10 @@
+[Unit]
+Description=Quartz symlink health check (Legion's Garden)
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0/scripts/symlink-health.sh
+StandardOutput=journal
+StandardError=journal
+Nice=15
