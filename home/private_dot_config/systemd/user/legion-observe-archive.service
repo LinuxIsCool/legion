@@ -1,0 +1,13 @@
+[Unit]
+Description=Legion Observatory nightly Parquet archive
+After=legion-observe-vmstorage.service
+Requires=legion-observe-vmstorage.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/miniforge3/envs/observatory/bin/python -m legion_observe.archiver
+WorkingDirectory=%h/.claude/plugins/local/legion-plugins/plugins/legion-observe
+Environment=HOME=%h
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=900
