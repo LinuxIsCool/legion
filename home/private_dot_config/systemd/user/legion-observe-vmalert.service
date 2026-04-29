@@ -1,0 +1,21 @@
+[Unit]
+Description=Legion Observatory vmalert
+After=legion-observe-vmstorage.service
+Requires=legion-observe-vmstorage.service
+
+[Service]
+Type=simple
+ExecStart=%h/legion-observe/bin/vmalert-prod \
+    -datasource.url=http://127.0.0.1:8428 \
+    -remoteWrite.url=http://127.0.0.1:8428 \
+    -rule=%h/.claude/plugins/local/legion-plugins/plugins/legion-observe/vmalert/rules/recording-1min.yaml \
+    -rule=%h/.claude/plugins/local/legion-plugins/plugins/legion-observe/vmalert/rules/recording-1hr.yaml \
+    -httpListenAddr=127.0.0.1:8880
+Restart=on-failure
+RestartSec=5
+Environment=HOME=%h
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
