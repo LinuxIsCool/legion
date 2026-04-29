@@ -1,0 +1,15 @@
+[Unit]
+Description=Quartz skills adapter — emit per-skill pages from plugin SKILL.md walks
+After=quartz-rhythm.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
+ExecStart=/usr/bin/uv run scripts/adapters/skills_to_markdown.py
+StandardOutput=append:/home/shawn/.claude/local/quartz/skills-adapter.log
+StandardError=append:/home/shawn/.claude/local/quartz/skills-adapter.log
+Nice=15
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+MemoryMax=2G
+TimeoutStartSec=5min

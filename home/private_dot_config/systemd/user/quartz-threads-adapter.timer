@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Quartz threads adapter every 60 minutes (offset from skills adapter)
+
+[Timer]
+OnCalendar=*:34
+Persistent=true
+Unit=quartz-threads-adapter.service
+
+[Install]
+WantedBy=timers.target

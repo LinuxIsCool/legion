@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Quartz skills adapter every 60 minutes (offset from sessions adapter)
+
+[Timer]
+OnCalendar=*:32
+Persistent=true
+Unit=quartz-skills-adapter.service
+
+[Install]
+WantedBy=timers.target

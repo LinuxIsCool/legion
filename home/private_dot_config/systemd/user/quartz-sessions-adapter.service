@@ -1,0 +1,15 @@
+[Unit]
+Description=Quartz sessions adapter — emit per-session pages from sessions/*.jsonl
+After=quartz-rhythm.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
+ExecStart=/usr/bin/uv run scripts/adapters/sessions_to_markdown.py
+StandardOutput=append:/home/shawn/.claude/local/quartz/sessions-adapter.log
+StandardError=append:/home/shawn/.claude/local/quartz/sessions-adapter.log
+Nice=15
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+MemoryMax=2G
+TimeoutStartSec=10min

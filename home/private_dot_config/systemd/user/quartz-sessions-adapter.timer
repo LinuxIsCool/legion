@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Quartz sessions adapter every 60 minutes (offset from internal build)
+
+[Timer]
+OnCalendar=*:30
+Persistent=true
+Unit=quartz-sessions-adapter.service
+
+[Install]
+WantedBy=timers.target

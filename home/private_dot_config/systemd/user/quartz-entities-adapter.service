@@ -1,0 +1,17 @@
+[Unit]
+Description=Quartz entities adapter — emit per-entity pages from hippo (top 5K by degree)
+After=quartz-rhythm.service hippo-graph.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
+ExecStart=/usr/bin/uv run scripts/adapters/entities_to_markdown.py
+StandardOutput=append:/home/shawn/.claude/local/quartz/entities-adapter.log
+StandardError=append:/home/shawn/.claude/local/quartz/entities-adapter.log
+Nice=18
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+MemoryMax=4G
+TimeoutStartSec=30min
+# Nightly only — PPR walks + 5000 emit is heavy. Don't compete with
+# build-rhythm during the day. 02:00 is well after spectral-gap timer (23:56).

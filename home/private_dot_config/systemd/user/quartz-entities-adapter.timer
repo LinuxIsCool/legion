@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Quartz entities adapter nightly at 02:00 (heavy hippo work)
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+Unit=quartz-entities-adapter.service
+
+[Install]
+WantedBy=timers.target
