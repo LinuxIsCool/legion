@@ -1,0 +1,10 @@
+[Unit]
+Description=Nightly Quartz DailyDigest backfill (prior day) at 00:30
+
+[Timer]
+OnCalendar=*-*-* 00:30
+Persistent=true
+Unit=quartz-daily-digest.service
+
+[Install]
+WantedBy=timers.target

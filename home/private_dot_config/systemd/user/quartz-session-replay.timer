@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Quartz session-replay adapter every hour (after sessions adapter at *:30)
+
+[Timer]
+OnCalendar=*:36
+Persistent=true
+Unit=quartz-session-replay.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Quartz TemporalSlice emitter every hour (offset from build + sessions adapters)
+
+[Timer]
+OnCalendar=*:38
+Persistent=true
+Unit=quartz-temporal-slice.service
+
+[Install]
+WantedBy=timers.target

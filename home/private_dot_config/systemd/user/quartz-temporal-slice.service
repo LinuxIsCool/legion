@@ -1,0 +1,15 @@
+[Unit]
+Description=Quartz TemporalSlice emitter — Phase 7 D2 last-N-days indices
+After=quartz-rhythm.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
+ExecStart=/usr/bin/uv run scripts/adapters/temporal_slice_emit.py
+StandardOutput=append:/home/shawn/.claude/local/quartz/temporal-slice.log
+StandardError=append:/home/shawn/.claude/local/quartz/temporal-slice.log
+Nice=15
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+MemoryMax=512M
+TimeoutStartSec=5min

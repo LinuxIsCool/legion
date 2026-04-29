@@ -1,0 +1,15 @@
+[Unit]
+Description=Quartz CalendarHeatmap emitter — Phase 7 D4 365-day SVG heatmaps
+After=quartz-daily-digest.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
+ExecStart=/usr/bin/uv run scripts/adapters/calendar_heatmap_emit.py
+StandardOutput=append:/home/shawn/.claude/local/quartz/calendar-heatmap.log
+StandardError=append:/home/shawn/.claude/local/quartz/calendar-heatmap.log
+Nice=15
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+MemoryMax=256M
+TimeoutStartSec=5min

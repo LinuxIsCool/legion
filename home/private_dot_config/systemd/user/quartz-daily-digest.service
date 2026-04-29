@@ -1,0 +1,15 @@
+[Unit]
+Description=Quartz DailyDigest emitter — Phase 7 D3 per-day cross-source aggregates
+After=quartz-rhythm.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
+ExecStart=/usr/bin/uv run scripts/adapters/daily_digest_emit.py
+StandardOutput=append:/home/shawn/.claude/local/quartz/daily-digest.log
+StandardError=append:/home/shawn/.claude/local/quartz/daily-digest.log
+Nice=15
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+MemoryMax=512M
+TimeoutStartSec=10min
