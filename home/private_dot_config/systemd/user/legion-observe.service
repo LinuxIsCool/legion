@@ -1,0 +1,21 @@
+[Unit]
+Description=Legion Observatory data plane (legion-observe)
+After=network.target hippo-graph.service letta-server.service legion-koi.service
+Wants=hippo-graph.service letta-server.service legion-koi.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.claude/plugins/local/legion-plugins/plugins/legion-observe
+ExecStart=%h/miniforge3/envs/observatory/bin/python -m legion_observe.daemon
+Restart=on-failure
+RestartSec=10
+Environment=HOME=%h
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=journal
+StandardError=journal
+MemoryHigh=300M
+MemoryMax=500M
+CPUQuota=10%
+
+[Install]
+WantedBy=default.target
