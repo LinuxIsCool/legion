@@ -1,0 +1,23 @@
+[Unit]
+Description=Legion Observatory VictoriaMetrics
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/legion-observe
+ExecStart=%h/legion-observe/bin/victoria-metrics-prod \
+    -storageDataPath=%h/legion-observe/vmstorage \
+    -httpListenAddr=127.0.0.1:8428 \
+    -retentionPeriod=12 \
+    -loggerOutput=stderr \
+    -promscrape.config=%h/.claude/plugins/local/legion-plugins/plugins/legion-observe/vmalert/scrape.yaml
+Restart=on-failure
+RestartSec=5
+Environment=HOME=%h
+StandardOutput=journal
+StandardError=journal
+MemoryHigh=400M
+MemoryMax=800M
+
+[Install]
+WantedBy=default.target
