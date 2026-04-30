@@ -43,6 +43,22 @@
             "command": "node /home/shawn/.claude/local/dock/repos/JuliusBrussee/caveman/hooks/caveman-activate.js"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-hero-spawn.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e SessionStart"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -52,6 +68,22 @@
           {
             "type": "command",
             "command": "node /home/shawn/.claude/local/dock/repos/JuliusBrussee/caveman/hooks/caveman-mode-tracker.js"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-hero-active.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e UserPromptSubmit"
           }
         ]
       }
@@ -66,6 +98,22 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-permission-request.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e PermissionRequest"
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -76,6 +124,325 @@
             "type": "command",
             "command": "bash /home/shawn/.claude/hooks/seed-guard.sh",
             "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-subagent-spawn.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-subagent-spawn.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-awaiting-input.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-permission-request.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-git-guard.js\""
+          },
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-bash-command.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-file-access.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-file-access.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-file-access.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e PreToolUse"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-hero-idle.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e Stop"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-input-received.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e PostToolUse"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-subagent-complete.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e SubagentStop"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e SessionEnd"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e Notification"
+          }
+        ]
+      }
+    ],
+    "Elicitation": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e Elicitation"
+          }
+        ]
+      }
+    ],
+    "ElicitationResult": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e ElicitationResult"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e PostToolUseFailure"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e SubagentStart"
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e TeammateIdle"
+          }
+        ]
+      }
+    ],
+    "TaskCreated": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e TaskCreated"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e TaskCompleted"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e StopFailure"
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e InstructionsLoaded"
+          }
+        ]
+      }
+    ],
+    "ConfigChange": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e ConfigChange"
+          }
+        ]
+      }
+    ],
+    "CwdChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e CwdChanged"
+          }
+        ]
+      }
+    ],
+    "FileChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e FileChanged"
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e WorktreeCreate"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e WorktreeRemove"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e PreCompact"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run /home/shawn/.claude/plugins/cache/legion-plugins/claude-logging/1.0.0/hooks/log_event.py -e PostCompact"
           }
         ]
       }
