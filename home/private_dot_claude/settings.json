@@ -531,7 +531,8 @@
     "claude-infinite@legion-plugins": true,
     "claude-graphiti@legion-plugins": true,
     "claude-tmux@legion-plugins": true,
-    "claude-logging@legion-plugins": true
+    "claude-logging@legion-plugins": true,
+    "claude-org@legion-plugins": true
   },
   "extraKnownMarketplaces": {
     "legion-plugins": {
