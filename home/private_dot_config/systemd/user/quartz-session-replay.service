@@ -4,8 +4,8 @@ After=quartz-sessions-adapter.service
 
 [Service]
 Type=oneshot
-WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
-ExecStart=/usr/bin/uv run scripts/adapters/session_replay_emit.py
+WorkingDirectory=/home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-quartz
+ExecStart=%h/.local/bin/uv run scripts/adapters/session_replay_emit.py
 StandardOutput=append:/home/shawn/.claude/local/quartz/session-replay-adapter.log
 StandardError=append:/home/shawn/.claude/local/quartz/session-replay-adapter.log
 Nice=15

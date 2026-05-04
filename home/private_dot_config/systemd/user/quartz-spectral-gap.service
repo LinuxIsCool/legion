@@ -10,8 +10,9 @@ WorkingDirectory=%h/.claude/plugins/local/legion-plugins/plugins/claude-quartz
 ExecStart=/usr/bin/env uv run %h/.claude/plugins/local/legion-plugins/plugins/claude-quartz/scripts/spectral_gap_emit.py
 StandardOutput=append:%h/.claude/local/quartz/spectral-gap.log
 StandardError=append:%h/.claude/local/quartz/spectral-gap.log
-# Eigenvalue computation is single-threaded scipy ARPACK, ~9 min on 60K nodes.
-TimeoutStartSec=20min
+# Eigenvalue computation scales with graph size; recent runs exceeded 20 min
+# without memory pressure, so keep this as a bounded nightly job.
+TimeoutStartSec=45min
 # Memory: sparse 60K × 60K Laplacian + ARPACK Krylov subspace ~ 1.5 GB peak.
 MemoryHigh=2G
 MemoryMax=3G

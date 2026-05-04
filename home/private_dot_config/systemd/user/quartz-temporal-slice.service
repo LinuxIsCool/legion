@@ -4,8 +4,8 @@ After=quartz-rhythm.service
 
 [Service]
 Type=oneshot
-WorkingDirectory=/home/shawn/.claude/plugins/cache/legion-plugins/claude-quartz/0.1.0
-ExecStart=/usr/bin/uv run scripts/adapters/temporal_slice_emit.py
+WorkingDirectory=/home/shawn/.claude/plugins/local/legion-plugins/plugins/claude-quartz
+ExecStart=%h/.local/bin/uv run scripts/adapters/temporal_slice_emit.py
 StandardOutput=append:/home/shawn/.claude/local/quartz/temporal-slice.log
 StandardError=append:/home/shawn/.claude/local/quartz/temporal-slice.log
 Nice=15

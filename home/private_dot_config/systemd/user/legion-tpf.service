@@ -12,4 +12,5 @@ EnvironmentFile=%h/.claude/local/secrets/telus-api.env
 # No GPU needed — uses TELUS sovereign endpoints
 CPUQuota=50%
 MemoryMax=2G
+TimeoutStartSec=20min
 Nice=15
