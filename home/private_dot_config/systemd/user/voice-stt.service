@@ -16,6 +16,12 @@ TimeoutStartSec=30
 KillSignal=SIGTERM
 KillMode=process
 Environment=PYTHONUNBUFFERED=1
+# Route default mic capture through PipeWire WebRTC AEC source (task-398 P0).
+# Subtracts Legion's own TTS (rendered to claude-voice-sink) from the mic
+# input before wake-word detection sees it. Prevents recursive self-trigger.
+# Verify pactl shows: voice-aec-source RUNNING. Override per-process via
+# VOICE_AEC_DEVICE if PortAudio surfaces the node by name on this host.
+Environment=PULSE_SOURCE=voice-aec-source
 
 [Install]
 WantedBy=voice.target
