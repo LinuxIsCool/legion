@@ -67,6 +67,16 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python3 /home/shawn/.claude/hooks/receptionist.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
             "command": "node /home/shawn/.claude/local/dock/repos/JuliusBrussee/caveman/hooks/caveman-mode-tracker.js"
           }
         ]
@@ -75,7 +85,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-hero-active.js\""
+            "command": "node /home/shawn/.claude/hooks/agentcraft-hero-active-normalized.js"
           }
         ]
       },
@@ -166,10 +176,6 @@
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-git-guard.js\""
-          },
           {
             "type": "command",
             "command": "node \"/home/shawn/.npm/_npx/6bf25bc83f26a9ed/node_modules/@idosal/agentcraft/plugin/hooks/agentcraft-bash-command.js\""
@@ -532,7 +538,11 @@
     "claude-graphiti@legion-plugins": true,
     "claude-tmux@legion-plugins": true,
     "claude-logging@legion-plugins": true,
-    "claude-org@legion-plugins": true
+    "claude-org@legion-plugins": true,
+    "claude-claude-web@legion-plugins": true,
+    "claude-pi@legion-plugins": true,
+    "claude-fdg@legion-plugins": true,
+    "registry-review@registry-review-mcp": true
   },
   "extraKnownMarketplaces": {
     "legion-plugins": {
@@ -563,6 +573,12 @@
       "source": {
         "source": "git",
         "url": "https://github.com/anthropics/skills.git"
+      }
+    },
+    "registry-review-mcp": {
+      "source": {
+        "source": "github",
+        "repo": "regen-network/registry-review-mcp"
       }
     }
   },
