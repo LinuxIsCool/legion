@@ -530,7 +530,7 @@
     "claude-statusline@legion-plugins": true,
     "claude-voice@legion-plugins": true,
     "claude-rlm@legion-plugins": true,
-    "claude-dialog@legion-plugins": true,
+    "claude-dialog@legion-plugins": false,
     "claude-discourse@legion-plugins": true,
     "claude-factory@legion-plugins": true,
     "claude-moc@legion-plugins": true,
