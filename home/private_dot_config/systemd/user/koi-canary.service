@@ -1,0 +1,10 @@
+[Unit]
+Description=KOI federation canary round-trip test
+After=personal-koi.service
+Wants=personal-koi.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/miniforge3/bin/python3 %h/.claude/local/scripts/koi_canary.py
+StandardOutput=journal
+StandardError=journal

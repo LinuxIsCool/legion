@@ -1,0 +1,9 @@
+[Unit]
+Description=KOI federation drift sweep
+After=personal-koi.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/miniforge3/bin/python3 %h/.claude/local/scripts/koi_drift_sweep.py
+StandardOutput=journal
+StandardError=journal
