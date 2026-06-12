@@ -32,7 +32,6 @@
     ],
     "skipDangerousModePermissionPrompt": true
   },
-  "model": "opus[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -62,16 +61,6 @@
       }
     ],
     "UserPromptSubmit": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 /home/shawn/.claude/hooks/receptionist.py",
-            "timeout": 5
-          }
-        ]
-      },
       {
         "matcher": ".*",
         "hooks": [

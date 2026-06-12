@@ -8,3 +8,6 @@
 # Runtime-generated tmux config (claude-tmux indicator format strings)
 .config/tmux/plugins-dynamic.conf
 README.md
+
+# Runtime/host-local Claude Code settings — never managed by chezmoi
+.claude/settings.local.json
