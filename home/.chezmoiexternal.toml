@@ -1,6 +1,10 @@
-[".config/nvim/lua/custom"]
+# Neovim config — NVChad v2.5. The whole ~/.config/nvim IS the repo (no base/custom
+# split as in v2.0). Full clone (not shallow) so it can be edited and pushed in place.
+[".config/nvim"]
   type = "git-repo"
-  url = "https://github.com/LinuxIsCool/nvchadcustom.git"
+  url = "https://github.com/LinuxIsCool/legion-nvim.git"
   refreshPeriod = "168h"
-  [".config/nvim/lua/custom".clone]
-    args = ["--branch", "legion", "--depth", "1"]
+  [".config/nvim".clone]
+    args = ["--branch", "main"]
+  [".config/nvim".pull]
+    args = ["--ff-only"]
