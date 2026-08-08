@@ -1,0 +1,27 @@
+[Unit]
+# The Legion Webui Hub (Mode B Platform) on http://127.0.0.1:8800/.
+#
+# Before this unit existed the hub was a foreground process someone had to
+# remember to launch -- `legion-hub` serves until Ctrl-C, so it died on every
+# reboot, suspend, and closed terminal. A surface that only runs when someone
+# remembers is an open loop, and the symptom is exactly what it was: "the hub
+# isn't running" with no error anywhere, because nothing had ever claimed
+# responsibility for running it.
+Description=Legion Webui Hub (Mode B Platform, :8800)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/shawn/.local/opt/legion-webui
+Environment=PATH=/home/shawn/.local/bin:/usr/bin
+ExecStart=/home/shawn/.local/opt/legion-webui-venv/bin/python /home/shawn/.local/opt/legion-webui/launch_hub.py
+Restart=always
+RestartSec=5
+# The hub proxies satellite processes it supervises itself. Killing only the
+# main process would orphan them; the control group takes the whole tree.
+KillMode=control-group
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

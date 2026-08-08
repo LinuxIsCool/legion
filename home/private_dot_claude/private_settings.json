@@ -3,7 +3,25 @@
   "env": {
     "PERSONA_SLUG": "shawn"
   },
-  "model": "sonnet",
+  "permissions": {
+    "deny": [
+      "mcp__plugin_Notion_notion__notion-create-pages",
+      "mcp__plugin_Notion_notion__notion-update-page",
+      "mcp__plugin_Notion_notion__notion-create-comment",
+      "mcp__plugin_Notion_notion__notion-move-pages",
+      "mcp__plugin_Notion_notion__notion-duplicate-page",
+      "mcp__plugin_Notion_notion__notion-create-database",
+      "mcp__plugin_Notion_notion__notion-create-folder",
+      "mcp__plugin_Notion_notion__notion-update-data-source",
+      "mcp__plugin_Notion_notion__notion-create-attachment",
+      "mcp__plugin_Notion_notion__notion-create-file-upload",
+      "mcp__plugin_Notion_notion__notion-create-view",
+      "mcp__plugin_Notion_notion__notion-update-view",
+      "mcp__plugin_Notion_notion__notion-convert-page-to-skill",
+      "mcp__claude_ai_Notion"
+    ]
+  },
+  "model": "opus[1m]",
   "statusLine": {
     "type": "command",
     "command": "uv run --script /home/shawn/Workspace/claude-statusline/hooks/status.py",
@@ -111,7 +129,12 @@
     "claude-schedule@legion-plugins": true,
     "claude-statusline@claude-statusline": true,
     "claude-tmux@claude-tmux": true,
-    "qodo@claude-plugins-official": true
+    "qodo@claude-plugins-official": true,
+    "claude-fleet@legion-plugins": true,
+    "claude-heartbeat@legion-plugins": true,
+    "claude-incidents@legion-plugins": true,
+    "claude-hippo@legion-plugins": true,
+    "claude-koi@legion-plugins": true
   },
   "extraKnownMarketplaces": {
     "legion-plugins": {
@@ -134,6 +157,11 @@
     }
   },
   "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark-daltonized"
+  "theme": "dark-daltonized",
+  "voiceEnabled": true
 }

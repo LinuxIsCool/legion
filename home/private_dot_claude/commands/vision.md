@@ -10,8 +10,16 @@ Use the `claude-backlog` system as the source of truth:
 
 - Data root: `~/.claude/local/backlog/`
 - File shape: `task-NNN - slug.md`
-- ID rule: scan `~/.claude/local/backlog/task-*.md`, extract the highest numeric ID, then use `max + 1`
-- Before creating the file, check the latest IDs to avoid parallel-numbering collisions
+- ID rule: reserve IDs by running the allocator. Never scan filenames, and never
+  compute `max + 1`; that is not atomic and produced 39 duplicated IDs in this
+  corpus before the allocator existed.
+
+      ~/Workspace/legion-plugins/plugins/claude-backlog/scripts/reserve-id --count N
+
+  It prints one ID per line under an exclusive lock. Use exactly the IDs it
+  returns. For a linked set of N tasks, reserve all N in one call before
+  writing any file, so intra-set `depends_on` and `blocks` edges can be
+  written correctly on the first pass.
 - Keep tasks flat; do not create status folders
 - Status belongs in frontmatter
 
