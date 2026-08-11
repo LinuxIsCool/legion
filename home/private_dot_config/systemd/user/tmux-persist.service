@@ -1,0 +1,32 @@
+[Unit]
+# A tmux server that outlives the compositor.
+#
+# Why this exists: on 2026-08-11 at 13:47:08 a global OOM caused Hyprland to
+# segfault. Under uwsm, Hyprland's death stops graphical-session.target, which
+# stops app-graphical.slice (PartOf=graphical-session.target), which reaps every
+# tmux-spawn-*.scope inside it. Twenty-one Claude Code sessions died with it.
+#
+# A plain user service lands in app.slice, which is NOT part of
+# graphical-session.target. Proof from that same crash: claude-tmux-arbiter and
+# claude-logging-rollup-daemon (app.slice) stayed up since Aug 10 20:02, while
+# nm-applet (app-graphical.slice) was killed and restarted at 13:47:18.
+#
+# Attach with:  tmux -L persist new -A -s main
+Description=Persistent tmux server, survives compositor crash and logout
+Documentation=man:tmux(1)
+After=default.target
+
+[Service]
+# -D runs the server in the foreground so systemd can supervise it directly
+# (no double-fork to lose) and turns exit-empty off, so the server survives
+# having zero sessions. With -D a command may not be given, so sessions are
+# created on demand by `tmux -L persist new -A -s <name>`.
+Type=exec
+ExecStart=/usr/bin/tmux -L persist -D
+ExecStop=/usr/bin/tmux -L persist kill-server
+Slice=app.slice
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
