@@ -1,0 +1,16 @@
+[Unit]
+Description=YouTube transcript collection session (one rate-limit-budgeted session, ~12 videos)
+Documentation=file:///home/shawn/.claude/local/backlog/task-4299%20-%20transcript-insight-network-source-anchored-knowledge-from-speech.md
+After=default.target
+
+[Service]
+Type=oneshot
+TimeoutStartSec=1800
+WorkingDirectory=%h/Workspace/legion-plugins/plugins/claude-youtube
+# The script owns its own budget: it reads ip_status, computes an adaptive
+# session budget from observed bans, spaces requests, and stops on a ban. Do not
+# pass --limit here; overriding the budget from outside is how you earn an IP ban.
+ExecStart=/home/shawn/.local/bin/uv run scripts/youtube-collect.py
+Environment=HOME=%h
+Nice=15
+MemoryMax=4G

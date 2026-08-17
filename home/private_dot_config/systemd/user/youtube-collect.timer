@@ -1,0 +1,21 @@
+[Unit]
+Description=Four YouTube collection sessions per day, spaced 4 hours apart
+
+[Timer]
+# 06:00, 10:00, 14:00, 18:00. The spacing is the rate-limit model, not a
+# preference: youtube-collect.py's docstring records that YouTube bans after
+# ~15 requests per session regardless of how they are spaced WITHIN a session,
+# so throughput comes from few requests per session and long gaps between them.
+# 4 x 12 = 48 videos/day with zero observed bans.
+OnCalendar=*-*-* 06,10,14,18:00:00
+
+# MUST stay false. Persistent=true would fire every session missed while the
+# machine was off, back to back, which is precisely the burst that gets the IP
+# banned. A missed session costs 12 videos; a ban costs days.
+Persistent=false
+
+# Jitter so the four sessions are not identical clockwork every day.
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
