@@ -15,7 +15,11 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=/home/shawn/.local/opt/legion-webui
 Environment=PATH=/home/shawn/.local/bin:/usr/bin
-ExecStart=/home/shawn/.local/opt/legion-webui-venv/bin/python /home/shawn/.local/opt/legion-webui/launch_hub.py
+Environment=PYTHONPATH=/home/shawn/.local/opt/legion-plugins-main/plugins/claude-webui
+# The gateway binds :8800 first and supervises the full Hub as a replaceable
+# backend generation on :8801. Persisted last-good projections keep reads
+# available inside the 100ms budget throughout cold starts and deploys.
+ExecStart=/home/shawn/.local/opt/legion-webui-venv/bin/python /home/shawn/.local/opt/legion-plugins-main/plugins/claude-webui/scripts/webui_gateway.py --port 8800 --backend-port 8801 --cache-dir /home/shawn/.cache/legion/hub-projections /home/shawn/.local/opt/legion-webui-venv/bin/python /home/shawn/.local/opt/legion-webui/launch_hub.py
 Restart=always
 RestartSec=5
 # The hub proxies satellite processes it supervises itself. Killing only the
