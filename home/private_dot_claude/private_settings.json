@@ -22,6 +22,20 @@
     ]
   },
   "model": "opus[1m]",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/shawn/Workspace/legion-plugins/plugins/claude-presentations/hooks/deck_vcs_preflight.py",
+            "timeout": 8
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "uv run --script /home/shawn/Workspace/claude-statusline/hooks/status.py",
