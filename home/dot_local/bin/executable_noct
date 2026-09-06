@@ -1,0 +1,11 @@
+#!/bin/sh
+# noct: talk to the running Noctalia shell by PID.
+# `qs -c noctalia-shell ipc ...` resolves the instance by config name, and on this
+# box that lookup fails ("No running instances") while the socket is healthy.
+# Addressing by --pid always works. Falls back to the by-name form if no process.
+#   noct call volume increase      noct show
+pid=$(pgrep -o -f 'qs -c noctalia-shell' 2>/dev/null)
+if [ -n "$pid" ]; then
+  exec qs ipc --pid "$pid" "$@"
+fi
+exec qs -c noctalia-shell ipc "$@"

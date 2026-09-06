@@ -1,5 +1,6 @@
 local mainMod = "SUPER"
-local noctCall = "qs -c noctalia-shell ipc call "
+-- noct resolves the shell by PID; the by-name lookup (qs -c ... ipc) fails on this box.
+local noctCall = "/home/shawn/.local/bin/noct call "
 local launchPrefix = "uwsm app -- " -- if you are not using UWSM, make this empty (e.g. "")
 
 ---------------------------
@@ -49,8 +50,22 @@ hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "l" }))
 hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.move({ direction = "r" }))
 hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.move({ direction = "u" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "d" }))
-hl.bind(mainMod .. " + CONTROL + SHIFT + L", hl.dsp.window.move({ workspace = "r+1" }))
-hl.bind(mainMod .. " + CONTROL + SHIFT + H", hl.dsp.window.move({ workspace = "r-1" }))
+
+-- Monitor layer: CONTROL changes hjkl from window scope to physical-monitor scope.
+-- SHIFT keeps its usual meaning: take the active window along and follow it.
+hl.bind(mainMod .. " + CONTROL + H", hl.dsp.focus({ monitor = "l" }))
+hl.bind(mainMod .. " + CONTROL + L", hl.dsp.focus({ monitor = "r" }))
+hl.bind(mainMod .. " + CONTROL + K", hl.dsp.focus({ monitor = "u" }))
+hl.bind(mainMod .. " + CONTROL + J", hl.dsp.focus({ monitor = "d" }))
+hl.bind(mainMod .. " + CONTROL + SHIFT + H", hl.dsp.window.move({ monitor = "l", follow = true }))
+hl.bind(mainMod .. " + CONTROL + SHIFT + L", hl.dsp.window.move({ monitor = "r", follow = true }))
+hl.bind(mainMod .. " + CONTROL + SHIFT + K", hl.dsp.window.move({ monitor = "u", follow = true }))
+hl.bind(mainMod .. " + CONTROL + SHIFT + J", hl.dsp.window.move({ monitor = "d", follow = true }))
+
+-- ALT operates on the whole current workspace: move it, with all of its windows,
+-- to the physical monitor left/right. Workspace IDs remain global and unchanged.
+hl.bind(mainMod .. " + CONTROL + ALT + H", hl.dsp.workspace.move({ monitor = "l" }))
+hl.bind(mainMod .. " + CONTROL + ALT + L", hl.dsp.workspace.move({ monitor = "r" }))
 
 -- Move & Resize with mouse
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag())
@@ -77,10 +92,14 @@ hl.bind(mainMod .. " + period",     hl.dsp.exec_cmd(noctCall .. "launcher emoji"
 ---------------------------
 
 -- Audio
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(noctCall .. "volume increase"),   { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(noctCall .. "volume decrease"),   { locked = true, repeating = true })
-hl.bind("XF86AudioMute",        hl.dsp.exec_cmd(noctCall .. "volume muteOutput"), { locked = true, repeating = true })
-hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd(noctCall .. "volume muteInput"),  { locked = true, repeating = true })
+-- Volume keys drive PipeWire directly so they work even when the shell is down.
+-- Noctalia's OSD watches the PipeWire volume, so it still pops up. Capped at 100%.
+-- Mute keys are toggles, so they must NOT repeat: a held key would flip state
+-- an unpredictable number of times (the mic stayed dead for days that way).
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),        { locked = true, repeating = true })
+hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),       { locked = true })
+hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),     { locked = true })
 
 -- Media
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd(noctCall .. "media playPause"), { locked = true })
@@ -91,6 +110,9 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd(noctCall .. "media previous"),  { lock
 -- Brightness
 hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(noctCall .. "brightness increase"), { repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(noctCall .. "brightness decrease"), { repeating = true })
+
+-- Cycle displays: laptop -> mirror -> extend -> external -> laptop
+hl.bind(mainMod .. " + ALT + P", hl.dsp.exec_cmd("/home/shawn/.local/bin/display-cycle"))
 
 -------------------
 ---- UTILITIES ----
@@ -131,11 +153,7 @@ hl.bind(mainMod .. " + N",                  hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + P",                  hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + SHIFT + N",          hl.dsp.window.move({ workspace = "e+1", follow = true }))
 hl.bind(mainMod .. " + SHIFT + P",          hl.dsp.window.move({ workspace = "e-1", follow = true }))
-hl.bind(mainMod .. " + CONTROL + L",       hl.dsp.focus({ workspace = "r+1" }))
-hl.bind(mainMod .. " + CONTROL + H",       hl.dsp.focus({ workspace = "r-1" }))
-hl.bind(mainMod .. " + CONTROL + J",       hl.dsp.focus({ workspace = "empty" }))
-hl.bind(mainMod .. " + CONTROL + ALT + L", hl.dsp.window.move({ workspace = "r+1" }))
-hl.bind(mainMod .. " + CONTROL + ALT + H", hl.dsp.window.move({ workspace = "r-1" }))
+hl.bind(mainMod .. " + CONTROL + N",       hl.dsp.focus({ workspace = "empty" }))
 
 -- Scroll through existing workspaces
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
