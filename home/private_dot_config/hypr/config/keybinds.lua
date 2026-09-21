@@ -63,9 +63,25 @@ hl.bind(mainMod .. " + CONTROL + SHIFT + K", hl.dsp.window.move({ monitor = "u",
 hl.bind(mainMod .. " + CONTROL + SHIFT + J", hl.dsp.window.move({ monitor = "d", follow = true }))
 
 -- ALT operates on the whole current workspace: move it, with all of its windows,
--- to the physical monitor left/right. Workspace IDs remain global and unchanged.
-hl.bind(mainMod .. " + CONTROL + ALT + H", hl.dsp.workspace.move({ monitor = "l" }))
-hl.bind(mainMod .. " + CONTROL + ALT + L", hl.dsp.workspace.move({ monitor = "r" }))
+-- to the physical monitor in that direction. Workspace IDs remain global and unchanged.
+local function moveWorkspaceAndFollow(direction)
+    local workspace = hl.get_active_workspace()
+    local destination = hl.get_monitor(direction)
+    if not workspace or not destination then return end
+
+    local previous = destination.active_workspace
+    hl.dispatch(hl.dsp.workspace.move({ monitor = direction }))
+    -- A focus change on the destination refreshes Noctalia's workspace highlight.
+    if previous and previous.id ~= workspace.id then
+        hl.dispatch(hl.dsp.focus({ workspace = previous.id }))
+    end
+    hl.dispatch(hl.dsp.focus({ workspace = workspace.id }))
+end
+
+hl.bind(mainMod .. " + CONTROL + ALT + H", function() moveWorkspaceAndFollow("l") end)
+hl.bind(mainMod .. " + CONTROL + ALT + L", function() moveWorkspaceAndFollow("r") end)
+hl.bind(mainMod .. " + CONTROL + ALT + K", function() moveWorkspaceAndFollow("u") end)
+hl.bind(mainMod .. " + CONTROL + ALT + J", function() moveWorkspaceAndFollow("d") end)
 
 -- Move & Resize with mouse
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag())
@@ -92,12 +108,11 @@ hl.bind(mainMod .. " + period",     hl.dsp.exec_cmd(noctCall .. "launcher emoji"
 ---------------------------
 
 -- Audio
--- Volume keys drive PipeWire directly so they work even when the shell is down.
--- Noctalia's OSD watches the PipeWire volume, so it still pops up. Capped at 100%.
+-- Noctalia handles volume and its on-screen display.
 -- Mute keys are toggles, so they must NOT repeat: a held key would flip state
 -- an unpredictable number of times (the mic stayed dead for days that way).
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),        { locked = true, repeating = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(noctCall .. "volume increase"), { locked = true, repeating = true, dont_inhibit = true, allow_input_capture = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(noctCall .. "volume decrease"), { locked = true, repeating = true, dont_inhibit = true, allow_input_capture = true })
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),       { locked = true })
 hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),     { locked = true })
 
