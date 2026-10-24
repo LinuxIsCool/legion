@@ -178,13 +178,13 @@ def main():
         try:
             win = json.loads(subprocess.run(["hyprctl", "activewindow", "-j"], capture_output=True, text=True).stdout)
             home = win["address"]
-            # Dwindle splits the focused window along its long side, which stacks a tall window's viewer in the
+            # Dispatches use Hyprland's Lua syntax (hl.dsp.*). Dwindle splits the focused window along its long side, which stacks a tall window's viewer in the
             # same column. Preselect a side-by-side split instead, toward the side of the screen with more room.
             mons = json.loads(subprocess.run(["hyprctl", "monitors", "-j"], capture_output=True, text=True).stdout)
             mon = next(m for m in mons if m["id"] == win["monitor"])
             centre = win["at"][0] + win["size"][0] / 2 - mon["x"]
             side = "l" if centre > mon["width"] / mon["scale"] / 2 else "r"
-            subprocess.run(["hyprctl", "dispatch", "layoutmsg", f"preselect {side}"], capture_output=True)
+            subprocess.run(["hyprctl", "dispatch", f'hl.dsp.layout("preselect {side}")'], capture_output=True)
         except Exception:
             pass
         pane = os.environ.get("TMUX_PANE")
@@ -195,7 +195,7 @@ def main():
             child.terminate()
             child.wait()
         if home:
-            subprocess.run(["hyprctl", "dispatch", "focuswindow", f"address:{home}"], capture_output=True)
+            subprocess.run(["hyprctl", "dispatch", f'hl.dsp.focus({{window="address:{home}"}})'], capture_output=True)
         if pane:
             subprocess.run(["tmux", "select-window", "-t", pane], capture_output=True)
             subprocess.run(["tmux", "select-pane", "-t", pane], capture_output=True)
