@@ -105,6 +105,22 @@ class View:
                   "= - zoom  hjkl pan  0 fit  1 100%  n p next/prev  q quit")
         out(f"\033[{self.lines + 1};1H\033[2K\033[2m{status[:self.cols - 1]}\033[0m")
 
+    def step(self, d):
+        """Next or previous image. Re-read the folder first, so files added or deleted meanwhile are handled."""
+        cur = self.files[self.idx]
+        folder = cur.parent
+        files = sorted(p for p in folder.iterdir() if p.suffix.lower() in EXT) or [cur]
+        names = [f.name for f in files]
+        # position of the current file, or where it would sit if it was deleted
+        here = names.index(cur.name) if cur.name in names else sum(n < cur.name for n in names) - (1 if d > 0 else 0)
+        self.files, self.idx = files, (here + d) % len(files)
+        out("\033[2J")  # new image may have a different shape
+        try:
+            self.load()
+        except OSError:  # unreadable or vanished: skip it
+            if len(files) > 1:
+                self.step(d)
+
     def view(self):
         """Visible part of the image, as fractions of its width and height."""
         scale = self.fit * self.zoom
@@ -135,9 +151,7 @@ class View:
         elif k == "1":
             self.zoom = max(1.0, 1 / self.fit)
         elif k in "n>p<":
-            self.idx = (self.idx + (1 if k in "n>" else -1)) % len(self.files)
-            out("\033[2J")  # new image may have a different shape
-            self.load()
+            self.step(1 if k in "n>" else -1)
         self.clamp()
 
 
