@@ -180,10 +180,18 @@ def main():
             home = win["address"]
             # Dispatches use Hyprland's Lua syntax (hl.dsp.*). Dwindle splits the focused window along its long side, which stacks a tall window's viewer in the
             # same column. Preselect a side-by-side split instead, toward the side of the screen with more room.
-            mons = json.loads(subprocess.run(["hyprctl", "monitors", "-j"], capture_output=True, text=True).stdout)
-            mon = next(m for m in mons if m["id"] == win["monitor"])
-            centre = win["at"][0] + win["size"][0] / 2 - mon["x"]
-            side = "l" if centre > mon["width"] / mon["scale"] / 2 else "r"
+            # Viewers share one column: if one is already open on this workspace, stack the new one under the lowest.
+            clients = json.loads(subprocess.run(["hyprctl", "clients", "-j"], capture_output=True, text=True).stdout)
+            viewers = [c for c in clients if c["class"] == "imgt" and c["workspace"]["id"] == win["workspace"]["id"]]
+            if viewers:
+                lowest = max(viewers, key=lambda c: c["at"][1])
+                subprocess.run(["hyprctl", "dispatch", f'hl.dsp.focus({{window="address:{lowest["address"]}"}})'], capture_output=True)
+                side = "d"
+            else:
+                mons = json.loads(subprocess.run(["hyprctl", "monitors", "-j"], capture_output=True, text=True).stdout)
+                mon = next(m for m in mons if m["id"] == win["monitor"])
+                centre = win["at"][0] + win["size"][0] / 2 - mon["x"]
+                side = "l" if centre > mon["width"] / mon["scale"] / 2 else "r"
             subprocess.run(["hyprctl", "dispatch", f'hl.dsp.layout("preselect {side}")'], capture_output=True)
         except Exception:
             pass
