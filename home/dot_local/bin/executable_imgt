@@ -172,12 +172,24 @@ def main():
     if TMUX:
         # tmux repaints cut bands into kitty pictures, so view in a new kitty window outside tmux (Hyprland tiles it as a split) and wait for it.
         env = {k: v for k, v in os.environ.items() if k not in ("TMUX", "TMUX_PANE")}
+        # Remember the window and tmux pane that launched us, to give focus back when the viewer closes.
+        import json
+        try:
+            home = json.loads(subprocess.run(["hyprctl", "activewindow", "-j"], capture_output=True, text=True).stdout)["address"]
+        except Exception:
+            home = None
+        pane = os.environ.get("TMUX_PANE")
         child = subprocess.Popen(["kitty", "--class=imgt", "-o", "confirm_os_window_close=0", sys.argv[0], str(path)], env=env)
         try:
             child.wait()
         except KeyboardInterrupt:  # Ctrl-C here closes the image window quietly
             child.terminate()
             child.wait()
+        if home:
+            subprocess.run(["hyprctl", "dispatch", "focuswindow", f"address:{home}"], capture_output=True)
+        if pane:
+            subprocess.run(["tmux", "select-window", "-t", pane], capture_output=True)
+            subprocess.run(["tmux", "select-pane", "-t", pane], capture_output=True)
         return
     files = sorted(p for p in path.parent.iterdir() if p.suffix.lower() in EXT)
     idx = files.index(path) if path in files else 0
