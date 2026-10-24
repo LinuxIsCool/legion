@@ -197,7 +197,10 @@ def main():
         v.render(sharp=True)
         dirty = False
         while True:
-            keys = read_keys(fd, 0.12 if dirty else 0.25)
+            try:
+                keys = read_keys(fd, 0.12 if dirty else 0.25)
+            except KeyboardInterrupt:  # Ctrl-C quits cleanly, like q
+                return
             if RESIZED:
                 RESIZED = False
                 v.resize()
@@ -216,7 +219,10 @@ def main():
             v.render(sharp=False)
             dirty = True
     finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+        # Swallow any terminal replies still in flight, so none leak out as keystrokes after we exit.
+        while select.select([fd], [], [], 0.05)[0]:
+            os.read(fd, 4096)
+        termios.tcsetattr(fd, termios.TCSAFLUSH, old)
         subprocess.run(["kitten", "icat", "--clear", "--stdin=no", "--silent"])
         out("\033[2J\033[H\033[?25h")
         for f in RUN.glob(f"imgt-{os.getpid()}-*.png"):
