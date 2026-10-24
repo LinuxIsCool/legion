@@ -101,8 +101,9 @@ class View:
         subprocess.run(["kitten", "icat", "--image-id", str(IMAGE_ID), "--transfer-mode=file", "--stdin=no",
                         "--silent", "--no-trailing-newline", "--align=center", f"--place={self.cols}x{self.lines}@0x0", str(path)])
         name = self.files[self.idx].name
-        out(f"\033[{self.lines + 1};1H\033[2K\033[2m{name}  {self.idx + 1}/{len(self.files)}  "
-            f"zoom {scale * 100:.0f}%   = - zoom  hjkl pan  0 fit  1 100%  n p next/prev  q quit\033[0m")
+        status = (f"{name}  {self.idx + 1}/{len(self.files)}  zoom {scale * 100:.0f}%   "
+                  "= - zoom  hjkl pan  0 fit  1 100%  n p next/prev  q quit")
+        out(f"\033[{self.lines + 1};1H\033[2K\033[2m{status[:self.cols - 1]}\033[0m")
 
     def view(self):
         """Visible part of the image, as fractions of its width and height."""
@@ -188,7 +189,7 @@ def main():
     fd = sys.stdin.fileno()
     old = termios.tcgetattr(fd)
     tty.setcbreak(fd)
-    out("\033[?25l\033[2J")
+    out("\033[?25l\033[?7l\033[2J")  # hide cursor, no line wrap
     try:
         import signal
         global RESIZED
@@ -224,7 +225,7 @@ def main():
             os.read(fd, 4096)
         termios.tcsetattr(fd, termios.TCSAFLUSH, old)
         subprocess.run(["kitten", "icat", "--clear", "--stdin=no", "--silent"])
-        out("\033[2J\033[H\033[?25h")
+        out("\033[2J\033[H\033[?7h\033[?25h")
         for f in RUN.glob(f"imgt-{os.getpid()}-*.png"):
             f.unlink(missing_ok=True)
         if zoomed == "0":
