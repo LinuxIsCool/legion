@@ -174,10 +174,19 @@ def main():
         env = {k: v for k, v in os.environ.items() if k not in ("TMUX", "TMUX_PANE")}
         # Remember the window and tmux pane that launched us, to give focus back when the viewer closes.
         import json
+        home = None
         try:
-            home = json.loads(subprocess.run(["hyprctl", "activewindow", "-j"], capture_output=True, text=True).stdout)["address"]
+            win = json.loads(subprocess.run(["hyprctl", "activewindow", "-j"], capture_output=True, text=True).stdout)
+            home = win["address"]
+            # Dwindle splits the focused window along its long side, which stacks a tall window's viewer in the
+            # same column. Preselect a side-by-side split instead, toward the side of the screen with more room.
+            mons = json.loads(subprocess.run(["hyprctl", "monitors", "-j"], capture_output=True, text=True).stdout)
+            mon = next(m for m in mons if m["id"] == win["monitor"])
+            centre = win["at"][0] + win["size"][0] / 2 - mon["x"]
+            side = "l" if centre > mon["width"] / mon["scale"] / 2 else "r"
+            subprocess.run(["hyprctl", "dispatch", "layoutmsg", f"preselect {side}"], capture_output=True)
         except Exception:
-            home = None
+            pass
         pane = os.environ.get("TMUX_PANE")
         child = subprocess.Popen(["kitty", "--class=imgt", "-o", "confirm_os_window_close=0", sys.argv[0], str(path)], env=env)
         try:
