@@ -54,52 +54,112 @@ def grid():
     return rows, cols, xpix, ypix
 
 
+class Loader:
+    """Decodes images on background threads and keeps the last few, so next/previous is instant."""
+
+    def __init__(self):
+        from concurrent.futures import ThreadPoolExecutor
+        self.pool = ThreadPoolExecutor(2)
+        self.jobs = {}
+
+    @staticmethod
+    def decode(path):
+        im = Image.open(path).convert("RGB")
+        pyramid = [(1, im)]
+        while pyramid[-1][1].width > 2000:  # smaller copies keep zoomed-out views of big sheets fast
+            f, img = pyramid[-1]
+            pyramid.append((f * 2, img.reduce(2)))
+        return im, pyramid
+
+    def get(self, path):
+        if path not in self.jobs:
+            self.jobs[path] = self.pool.submit(self.decode, path)
+        return self.jobs[path]
+
+    def keep(self, paths):
+        """Forget decoded images that are no longer near the current one."""
+        for p in list(self.jobs):
+            if p not in paths:
+                self.jobs.pop(p).cancel()
+
+
 class View:
     def __init__(self, files, idx):
         self.files, self.idx = files, idx
         self.frame = 0
+        self.loader = Loader()
         self.resize()
         self.load()
 
     def resize(self):
         rows, self.cols, xpix, ypix = grid()
         self.lines = rows - 1  # last line is the status bar
-        self.W, self.H = xpix, ypix * self.lines // rows
-        self.shape = None
+        self.cw, self.ch = xpix / self.cols, ypix / rows  # pixels per cell
+        self.W, self.H = xpix, int(self.ch * self.lines)
         if hasattr(self, "im"):
-            self.fit = min(self.W / self.im.width, self.H / self.im.height)
+            self.fit = min(self.W / self.size()[0], self.H / self.size()[1])
 
     def load(self):
-        self.im = Image.open(self.files[self.idx]).convert("RGB")
-        # Smaller copies for zoomed-out views, so big sheets stay fast.
-        self.pyramid = [(1, self.im)]
-        while self.pyramid[-1][1].width > 2000:
-            f, img = self.pyramid[-1]
-            self.pyramid.append((f * 2, img.reduce(2)))
+        path = self.files[self.idx]
+        job = self.loader.get(path)
+        if job.done():
+            self.im, self.pyramid = job.result()
+            self.pending = None
+        else:
+            # Not decoded yet: show a screen-sized decode now (JPEG draft mode is several times faster)
+            # and swap in the full image when the background decode finishes.
+            im = Image.open(path)
+            size = im.size
+            im.draft("RGB", (self.W, self.H))
+            small = im.convert("RGB")
+            self.im = small
+            self.full_size = size
+            self.pyramid = [(size[0] / small.width, small)]
+            self.pending = job
         self.zoom, self.cx, self.cy = 1.0, 0.5, 0.5
-        self.fit = min(self.W / self.im.width, self.H / self.im.height)
+        self.fit = min(self.W / self.size()[0], self.H / self.size()[1])
+        near = {self.files[(self.idx + d) % len(self.files)] for d in (-1, 0, 1)}
+        for p in near:
+            self.loader.get(p)  # prefetch the neighbours
+        self.loader.keep(near | {path})
+
+    def size(self):
+        return self.full_size if self.pending else self.im.size
+
+    def poll(self):
+        """Swap in the full image once its background decode is done. True if the view should redraw."""
+        if self.pending and self.pending.done():
+            try:
+                self.im, self.pyramid = self.pending.result()
+            except Exception:
+                self.pending = None
+                return False
+            self.pending = None
+            return self.zoom > 1.0
+        return False
 
     def render(self, sharp: bool):
-        im, scale = self.im, self.fit * self.zoom
-        vw, vh = min(im.width, self.W / scale), min(im.height, self.H / scale)
-        x0 = min(max(self.cx * im.width - vw / 2, 0), im.width - vw)
-        y0 = min(max(self.cy * im.height - vh / 2, 0), im.height - vh)
+        iw, ih = self.size()
+        scale = self.fit * self.zoom
+        vw, vh = min(iw, self.W / scale), min(ih, self.H / scale)
+        x0 = min(max(self.cx * iw - vw / 2, 0), iw - vw)
+        y0 = min(max(self.cy * ih - vh / 2, 0), ih - vh)
         f, src = next(((f, img) for f, img in reversed(self.pyramid) if scale * f <= 1.0), self.pyramid[0])
         crop = src.crop((int(x0 / f), int(y0 / f), int((x0 + vw) / f), int((y0 + vh) / f)))
-        size = (max(1, round(crop.width * scale * f)), max(1, round(crop.height * scale * f)))
+        size = (max(1, min(self.W, round(crop.width * scale * f))), max(1, min(self.H, round(crop.height * scale * f))))
         method = Image.NEAREST if scale >= 2 else (Image.LANCZOS if sharp else Image.BILINEAR)
         frame = crop.resize(size, method)
-        shape = (round(frame.width / self.W * self.cols), round(frame.height / self.H * self.lines))
-        if shape != getattr(self, "shape", None):  # the picture's footprint changed: wipe old placeholder cells
-            out("\033[2J")
-            self.shape = shape
-        # Same image id every frame: kitty swaps the picture in place, so nothing flashes.
+        # Raw pixels through a RAM file, sent straight to kitty with a fixed image id:
+        # the new frame replaces the old one in place, with no helper process and nothing to clear.
         self.frame ^= 1
-        path = RUN / f"imgt-{os.getpid()}-{self.frame}.png"
-        frame.save(path, compress_level=0)
-        out("\033[H")
-        subprocess.run(["kitten", "icat", "--image-id", str(IMAGE_ID), "--transfer-mode=file", "--stdin=no",
-                        "--silent", "--no-trailing-newline", "--align=center", f"--place={self.cols}x{self.lines}@0x0", str(path)])
+        path = RUN / f"imgt-{os.getpid()}-{self.frame}.rgb"
+        path.write_bytes(frame.tobytes())
+        left, top = (self.W - frame.width) / 2, (self.H - frame.height) / 2
+        col, row = int(left // self.cw), int(top // self.ch)
+        X, Y = int(left - col * self.cw), int(top - row * self.ch)
+        b64 = base64.b64encode(str(path).encode()).decode()
+        out(f"\033[{row + 1};{col + 1}H")
+        gfx(f"a=T,f=24,t=f,s={frame.width},v={frame.height},i={IMAGE_ID},p=1,X={X},Y={Y},C=1,q=2;{b64}")
         name = self.files[self.idx].name
         status = (f"{name}  {self.idx + 1}/{len(self.files)}  zoom {scale * 100:.0f}%   "
                   "= - zoom  hjkl pan  0 fit  1 100%  n p next/prev  q quit")
@@ -108,13 +168,11 @@ class View:
     def step(self, d):
         """Next or previous image. Re-read the folder first, so files added or deleted meanwhile are handled."""
         cur = self.files[self.idx]
-        folder = cur.parent
-        files = sorted(p for p in folder.iterdir() if p.suffix.lower() in EXT) or [cur]
+        files = sorted(p for p in cur.parent.iterdir() if p.suffix.lower() in EXT) or [cur]
         names = [f.name for f in files]
         # position of the current file, or where it would sit if it was deleted
         here = names.index(cur.name) if cur.name in names else sum(n < cur.name for n in names) - (1 if d > 0 else 0)
         self.files, self.idx = files, (here + d) % len(files)
-        out("\033[2J")  # new image may have a different shape
         try:
             self.load()
         except OSError:  # unreadable or vanished: skip it
@@ -123,8 +181,8 @@ class View:
 
     def view(self):
         """Visible part of the image, as fractions of its width and height."""
-        scale = self.fit * self.zoom
-        return min(1.0, self.W / scale / self.im.width), min(1.0, self.H / scale / self.im.height)
+        scale, (iw, ih) = self.fit * self.zoom, self.size()
+        return min(1.0, self.W / scale / iw), min(1.0, self.H / scale / ih)
 
     def clamp(self):
         # Keep the centre where the view can actually be, so every pan press moves the picture.
@@ -249,8 +307,11 @@ def main():
                 RESIZED = False
                 v.resize()
                 out("\033[2J")
+                v.fit = min(v.W / v.size()[0], v.H / v.size()[1])
                 v.render(sharp=True)
                 continue
+            if v.poll():
+                v.render(sharp=True)
             if keys is None:  # keys stopped: draw the sharp frame once
                 if dirty:
                     v.render(sharp=True)
@@ -267,9 +328,9 @@ def main():
         while select.select([fd], [], [], 0.05)[0]:
             os.read(fd, 4096)
         termios.tcsetattr(fd, termios.TCSAFLUSH, old)
-        subprocess.run(["kitten", "icat", "--clear", "--stdin=no", "--silent"])
+        gfx(f"a=d,d=I,i={IMAGE_ID},q=2")
         out("\033[2J\033[H\033[?7h\033[?25h")
-        for f in RUN.glob(f"imgt-{os.getpid()}-*.png"):
+        for f in RUN.glob(f"imgt-{os.getpid()}-*.rgb"):
             f.unlink(missing_ok=True)
         if zoomed == "0":
             subprocess.run(["tmux", "resize-pane", "-Z"])
