@@ -1,0 +1,20 @@
+#!/bin/sh
+# Play in the terminal with Kitty graphics. Inside tmux, zoom the pane first so the
+# video lines up with it, then unzoom and clear leftover images on exit (q or Ctrl-C).
+zoomed=1
+if [ -n "$TMUX" ]; then
+	zoomed=$(tmux display -p '#{window_zoomed_flag}')
+	[ "$zoomed" = 0 ] && tmux resize-pane -Z
+fi
+
+cleanup() {
+	if [ -n "$TMUX" ]; then
+		tty=$(tmux display -p '#{client_tty}')
+		printf '\033_Ga=d,d=A\033\\' > "$tty"
+		[ "$zoomed" = 0 ] && tmux resize-pane -Z
+	fi
+}
+trap cleanup EXIT
+trap 'exit 130' INT TERM
+
+mpv --profile=term "$@"

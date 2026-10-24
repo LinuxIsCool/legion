@@ -1,0 +1,223 @@
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["pillow"]
+# ///
+"""View an image inside kitty (also inside tmux) with smooth zoom and pan.
+
+Keys: = or + zoom in, - zoom out, h j k l or arrows pan, 0 fit, 1 true pixels (100%),
+n or > next image in the folder, p or < previous, q quit.
+
+Each frame replaces the previous one in place (same kitty image id), so nothing flashes.
+A quick frame is drawn on every key, and a sharp one once keys stop for a moment.
+Keys that pile up while drawing are merged, so it cannot fall behind.
+"""
+import base64
+import os
+import select
+import shutil
+import subprocess
+import sys
+import termios
+import tty
+from pathlib import Path
+
+from PIL import Image
+
+EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
+RUN = Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp"))
+TMUX = bool(os.environ.get("TMUX"))
+IMAGE_ID = 4242
+
+
+def out(s: str):
+    sys.stdout.write(s)
+    sys.stdout.flush()
+
+
+def gfx(cmd: str):
+    """Send a kitty graphics command, wrapped for tmux passthrough when inside tmux."""
+    seq = f"\033_G{cmd}\033\\"
+    if TMUX:
+        seq = "\033Ptmux;" + seq.replace("\033", "\033\033") + "\033\\"
+    out(seq)
+
+
+def grid():
+    """Rows, columns and the pixel size of the text grid, straight from the terminal."""
+    import fcntl
+    import struct
+    rows, cols, xpix, ypix = struct.unpack("HHHH", fcntl.ioctl(sys.stdout.fileno(), termios.TIOCGWINSZ, b"\0" * 8))
+    if not xpix:
+        w, h = subprocess.run(["kitten", "icat", "--print-window-size"], capture_output=True, text=True).stdout.strip().split("x")
+        xpix, ypix = int(w), int(h)
+    return rows, cols, xpix, ypix
+
+
+class View:
+    def __init__(self, files, idx):
+        self.files, self.idx = files, idx
+        self.frame = 0
+        self.resize()
+        self.load()
+
+    def resize(self):
+        rows, self.cols, xpix, ypix = grid()
+        self.lines = rows - 1  # last line is the status bar
+        self.W, self.H = xpix, ypix * self.lines // rows
+        self.shape = None
+        if hasattr(self, "im"):
+            self.fit = min(self.W / self.im.width, self.H / self.im.height)
+
+    def load(self):
+        self.im = Image.open(self.files[self.idx]).convert("RGB")
+        self.zoom, self.cx, self.cy = 1.0, 0.5, 0.5
+        self.fit = min(self.W / self.im.width, self.H / self.im.height)
+
+    def render(self, sharp: bool):
+        im, scale = self.im, self.fit * self.zoom
+        vw, vh = min(im.width, self.W / scale), min(im.height, self.H / scale)
+        x0 = min(max(self.cx * im.width - vw / 2, 0), im.width - vw)
+        y0 = min(max(self.cy * im.height - vh / 2, 0), im.height - vh)
+        crop = im.crop((int(x0), int(y0), int(x0 + vw), int(y0 + vh)))
+        size = (max(1, round(crop.width * scale)), max(1, round(crop.height * scale)))
+        method = Image.NEAREST if scale >= 2 else (Image.LANCZOS if sharp else Image.BILINEAR)
+        frame = crop.resize(size, method)
+        shape = (round(frame.width / self.W * self.cols), round(frame.height / self.H * self.lines))
+        if shape != getattr(self, "shape", None):  # the picture's footprint changed: wipe old placeholder cells
+            out("\033[2J")
+            self.shape = shape
+        # Same image id every frame: kitty swaps the picture in place, so nothing flashes.
+        self.frame ^= 1
+        path = RUN / f"imgt-{os.getpid()}-{self.frame}.png"
+        frame.save(path, compress_level=0)
+        out("\033[H")
+        subprocess.run(["kitten", "icat", "--image-id", str(IMAGE_ID), "--transfer-mode=file", "--stdin=no",
+                        "--silent", "--no-trailing-newline", "--align=center", f"--place={self.cols}x{self.lines}@0x0", str(path)])
+        name = self.files[self.idx].name
+        out(f"\033[{self.lines + 1};1H\033[2K\033[2m{name}  {self.idx + 1}/{len(self.files)}  "
+            f"zoom {scale * 100:.0f}%   = - zoom  hjkl pan  0 fit  1 100%  n p next/prev  q quit\033[0m")
+
+    def view(self):
+        """Visible part of the image, as fractions of its width and height."""
+        scale = self.fit * self.zoom
+        return min(1.0, self.W / scale / self.im.width), min(1.0, self.H / scale / self.im.height)
+
+    def clamp(self):
+        # Keep the centre where the view can actually be, so every pan press moves the picture.
+        fw, fh = self.view()
+        self.cx = min(max(self.cx, fw / 2), 1 - fw / 2)
+        self.cy = min(max(self.cy, fh / 2), 1 - fh / 2)
+
+    def apply(self, k):
+        fw, fh = self.view()
+        if k in "=+":
+            self.zoom = min(self.zoom * 1.25, 64)
+        elif k == "-":
+            self.zoom = max(self.zoom / 1.25, 1)
+        elif k == "h":
+            self.cx -= fw * 0.15
+        elif k == "l":
+            self.cx += fw * 0.15
+        elif k == "k":
+            self.cy -= fh * 0.15
+        elif k == "j":
+            self.cy += fh * 0.15
+        elif k == "0":
+            self.zoom, self.cx, self.cy = 1.0, 0.5, 0.5
+        elif k == "1":
+            self.zoom = max(1.0, 1 / self.fit)
+        elif k in "n>p<":
+            self.idx = (self.idx + (1 if k in "n>" else -1)) % len(self.files)
+            out("\033[2J")  # new image may have a different shape
+            self.load()
+        self.clamp()
+
+
+def read_keys(fd, timeout):
+    """Wait up to timeout for input; return every key already waiting (arrows mapped to hjkl)."""
+    if not select.select([fd], [], [], timeout)[0]:
+        return None
+    data = os.read(fd, 1024)
+    while select.select([fd], [], [], 0)[0]:
+        data += os.read(fd, 1024)
+    keys, i = [], 0
+    while i < len(data):
+        if data[i:i + 2] == b"\x1b[" and i + 2 < len(data):
+            keys.append({65: "k", 66: "j", 67: "l", 68: "h"}.get(data[i + 2], ""))
+            i += 3
+        else:
+            keys.append(chr(data[i]))
+            i += 1
+    return keys
+
+
+RESIZED = False
+
+
+def on_resize(*_):
+    global RESIZED
+    RESIZED = True
+
+
+def main():
+    path = Path(sys.argv[1]).resolve()
+    if TMUX:
+        # tmux repaints cut bands into kitty pictures, so view in a new kitty window outside tmux (Hyprland tiles it as a split) and wait for it.
+        env = {k: v for k, v in os.environ.items() if k not in ("TMUX", "TMUX_PANE")}
+        child = subprocess.Popen(["kitty", "--class=imgt", "-o", "confirm_os_window_close=0", sys.argv[0], str(path)], env=env)
+        try:
+            child.wait()
+        except KeyboardInterrupt:  # Ctrl-C here closes the image window quietly
+            child.terminate()
+            child.wait()
+        return
+    files = sorted(p for p in path.parent.iterdir() if p.suffix.lower() in EXT)
+    idx = files.index(path) if path in files else 0
+    zoomed = "1"
+    if TMUX:
+        zoomed = subprocess.run(["tmux", "display", "-p", "#{window_zoomed_flag}"], capture_output=True, text=True).stdout.strip()
+        if zoomed == "0":
+            subprocess.run(["tmux", "resize-pane", "-Z"])
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    tty.setcbreak(fd)
+    out("\033[?25l\033[2J")
+    try:
+        import signal
+        global RESIZED
+        signal.signal(signal.SIGWINCH, on_resize)
+        v = View(files, idx)
+        v.render(sharp=True)
+        dirty = False
+        while True:
+            keys = read_keys(fd, 0.12 if dirty else 0.25)
+            if RESIZED:
+                RESIZED = False
+                v.resize()
+                out("\033[2J")
+                v.render(sharp=True)
+                continue
+            if keys is None:  # keys stopped: draw the sharp frame once
+                if dirty:
+                    v.render(sharp=True)
+                    dirty = False
+                continue
+            if "q" in keys:
+                return
+            for k in keys:
+                v.apply(k)
+            v.render(sharp=False)
+            dirty = True
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+        subprocess.run(["kitten", "icat", "--clear", "--stdin=no", "--silent"])
+        out("\033[2J\033[H\033[?25h")
+        for f in RUN.glob(f"imgt-{os.getpid()}-*.png"):
+            f.unlink(missing_ok=True)
+        if zoomed == "0":
+            subprocess.run(["tmux", "resize-pane", "-Z"])
+
+
+if __name__ == "__main__":
+    main()

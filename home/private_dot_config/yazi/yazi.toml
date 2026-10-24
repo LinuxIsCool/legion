@@ -1,0 +1,23 @@
+# Enter on a video or audio file plays it inside this terminal with mpv (q returns to Yazi).
+# Enter on an image shows it in this terminal with imgt: = and - zoom, h j k l or arrows pan, 0 fit,
+# 1 true pixels, n and p step through the folder, q returns to Yazi.
+# (mpv froze the terminal when zooming images, 2026-10-24.) O offers an mpv window or the default app.
+# Press O instead of Enter to pick the window versions.
+[opener]
+play = [
+	{ run = 'mpvt %s', block = true, desc = "Play in terminal" },
+	{ run = 'mpv %s', orphan = true, desc = "Play in window" },
+]
+
+view = [
+	{ run = 'imgt %s', block = true, desc = "View in terminal" },
+	{ run = 'mpv --image-display-duration=inf --autocreate-playlist=same --directory-filter-types=image --osd-level=1 %s', orphan = true, desc = "View in window" },
+	{ run = 'xdg-open %s', orphan = true, desc = "Open in default app" },
+]
+
+[open]
+prepend_rules = [
+	{ mime = "image/*", use = "view" },
+	{ mime = "video/*", use = "play" },
+	{ mime = "audio/*", use = "play" },
+]
