@@ -15,6 +15,7 @@ Keys that pile up while drawing are merged, so it cannot fall behind.
 import base64
 import os
 import select
+import time
 import shutil
 import subprocess
 import sys
@@ -116,12 +117,33 @@ class View:
             self.full_size = size
             self.pyramid = [(size[0] / small.width, small)]
             self.pending = job
+        self.mtime = path.stat().st_mtime
         self.zoom, self.cx, self.cy = 1.0, 0.5, 0.5
         self.fit = min(self.W / self.size()[0], self.H / self.size()[1])
         near = {self.files[(self.idx + d) % len(self.files)] for d in (-1, 0, 1)}
         for p in near:
             self.loader.get(p)  # prefetch the neighbours
         self.loader.keep(near | {path})
+
+    def reload_if_changed(self):
+        """Show the new version when the current file is rewritten (e.g. a rebuilt gallery sheet), keeping zoom and position.
+        Waits until the file has been still for a second, so a half-written image is never shown."""
+        path = self.files[self.idx]
+        try:
+            m = path.stat().st_mtime
+        except OSError:  # being replaced right now
+            return False
+        if m == self.mtime or time.time() - m < 1.0:
+            return False
+        keep = self.zoom, self.cx, self.cy
+        self.loader.jobs.pop(path, None)
+        try:
+            self.load()
+        except OSError:
+            return False
+        self.zoom, self.cx, self.cy = keep
+        self.clamp()
+        return True
 
     def size(self):
         return self.full_size if self.pending else self.im.size
@@ -298,6 +320,7 @@ def main():
         v = View(files, idx)
         v.render(sharp=True)
         dirty = False
+        checked = time.monotonic()
         while True:
             try:
                 keys = read_keys(fd, 0.12 if dirty else 0.25)
@@ -316,6 +339,10 @@ def main():
                 if dirty:
                     v.render(sharp=True)
                     dirty = False
+                elif time.monotonic() - checked > 1.0:  # idle: pick up a rewritten file
+                    checked = time.monotonic()
+                    if v.reload_if_changed():
+                        v.render(sharp=True)
                 continue
             if "q" in keys:
                 return
